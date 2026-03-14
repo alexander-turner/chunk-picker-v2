@@ -3480,10 +3480,14 @@ let roll2Canvas = function(override) {
     let numToRoll = mid === roll5Mid ? 5 : 2;
     let rands = [];
     let sNums = [];
-    let savedEl = (!!tempChunks['selected'] && Object.keys(tempChunks['selected']).filter(chunkId => { let coords = convertToXY(chunkId); return !(tempChunks['selected'][chunkId] === 'undefined' || tempChunks['selected'][chunkId] === 'NaN' || chunkId === 'undefined' || chunkId === 'NaN' || coords.x >= rowSize || coords.y >= (fullSize / rowSize) || coords.x < 0 || coords.y < 0) })) || [];
-    let savedTempSelectedChunks = JSON.parse(JSON.stringify(tempSelectedChunks));
+    let isValidChunk = function(chunkId) {
+        let coords = convertToXY(chunkId);
+        return !(tempChunks['selected'][chunkId] === 'undefined' || tempChunks['selected'][chunkId] === 'NaN' || chunkId === 'undefined' || chunkId === 'NaN' || coords.x >= rowSize || coords.y >= (fullSize / rowSize) || coords.x < 0 || coords.y < 0);
+    };
+    let savedEl = (!!tempChunks['selected'] && Object.keys(tempChunks['selected']).filter(isValidChunk)) || [];
+    let savedTempSelectedChunks = [...tempSelectedChunks];
     for (let i = 0; i < numToRoll; i++) {
-        el = (!!tempChunks['selected'] && Object.keys(tempChunks['selected']).filter(chunkId => { let coords = convertToXY(chunkId); return !(tempChunks['selected'][chunkId] === 'undefined' || tempChunks['selected'][chunkId] === 'NaN' || chunkId === 'undefined' || chunkId === 'NaN' || coords.x >= rowSize || coords.y >= (fullSize / rowSize) || coords.x < 0 || coords.y < 0) })) || [];
+        el = (!!tempChunks['selected'] && Object.keys(tempChunks['selected']).filter(isValidChunk)) || [];
         if (!el || el.length === 0) {
             return;
         }
