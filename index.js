@@ -5004,6 +5004,7 @@ let unlockEntry = function() {
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
     firebase.auth().fetchSignInMethodsForEmail('sourcechunk+' + mid + '@yandex.com').then((methods) => {
         if (signInAttempts > 15) {
+            // Exponential backoff capped at 30s; at 15+ attempts this always hits the 30s cap
             setTimeout(function() {
                 $('.pin.entry').addClass('animated shake wrong').select();
                 $('#unlock-entry').prop('disabled', true).text('Unlock');
@@ -5354,6 +5355,7 @@ let changePin = function() {
         }
 
         if (signInAttempts > 15) {
+            // Exponential backoff capped at 30s; at 15+ attempts this always hits the 30s cap
             setTimeout(function() {
                 $('.pin-err').css('visibility', 'visible');
                 $('.pin.old2.first').addClass('wrong').select();
@@ -10055,16 +10057,18 @@ let changeCurrentPaintColor = function() {
     }
 }
 
-// Encode string for Firebase paths — uses custom '-_-' encoding instead of '%' to avoid
-// conflicts with Firebase key restrictions. Do NOT replace with encodeURIComponent as this
-// would break backwards compatibility with existing stored data.
+// Encode string for use in HTML attributes and Firebase paths. When forFirebase is true,
+// replaces '%' with '-_-' to avoid Firebase key restrictions. Do NOT replace with
+// encodeURIComponent — backwards compatibility with existing stored data requires the
+// custom '-_-' encoding convention for Firebase paths.
 let encodeRFC5987ValueChars = function(str, forFirebase) {
     let percentReplace = forFirebase ? '-_-' : '%';
     return (encodeURIComponent(str.replaceAll(/\./g, '%2E').replaceAll(/#/g, '%2F').replaceAll(/\//g, '%2G')).replace(/['()*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`).replace(/%(7C|60|5E)/g, (str, hex) => String.fromCharCode(parseInt(hex, 16))).replaceAll('%25', '%')).replaceAll(/%/g, percentReplace);
 }
 
-// Decode string from custom Firebase encoding — reverses '-_-' back to '%' before
-// decoding. Do NOT replace with decodeURIComponent as stored data uses the '-_-' convention.
+// Decode string encoded by encodeRFC5987ValueChars. Reverses '-_-' back to '%' and
+// handles custom escape sequences (%2E, %2F, etc.). Do NOT replace with decodeURIComponent
+// as existing stored data uses the '-_-' convention and custom escape codes.
 let decodeQueryParam = function(str) {
     return decodeURIComponent(str.replaceAll('-_-', '%').replaceAll('%25', '%').replaceAll(/%2E/g, '.').replaceAll(/%2F/g, '#').replaceAll(/%2G/g, '/').replaceAll(/%2H/g, "'").replaceAll(/-2H/g, "'").replaceAll(/%2I/g, ',').replaceAll(/%2J/g, '+').replaceAll(/%2Q/g, '!').replace(/%(?![0-9a-zA-Z][0-9a-zA-Z]+)/g, '%25')).replaceAll(/%2E/g, '.').replaceAll(/%2F/g, '#').replaceAll(/%2G/g, '/').replaceAll(/%2H/g, "'").replaceAll(/-2H/g, "'").replaceAll(/%2I/g, ',').replaceAll(/%2J/g, '+').replaceAll(/%2Q/g, '!');
 }
