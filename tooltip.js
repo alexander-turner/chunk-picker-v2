@@ -12,6 +12,11 @@ const tooltipTexts = {
     'slayerLockingTooltip': `<i><b>What is Slayer Locking?</b></i> When receiving a slayer task from a slayer master, if you're unable to complete the task within your unlocked chunks, you are now Slayer Locked.<br /><br />This interface allows you to select if you have gotten Slayer Locked, and provide your currently reached Slayer level and what task you got locked by, so that the Chunk Picker can account for you being locked.<br /><br />Your Slayer Lock will be automatically removed once you unlock a way to complete your locked task, or can be manually unlocked at any time.`
 };
 
+function escapeAttr(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;')
+                      .replace(/'/g, '&#39;').replace(/</g, '&lt;');
+}
+
 let showTooltip = function(content, id, position, width) {
     let target = $(`#${id}.tooltip-base-el`);
     let tooltip = $('.custom-tooltiptext');
@@ -59,8 +64,22 @@ let hideTooltip = function() {
     $('.custom-tooltiptext').css('visibility', 'hidden');
 }
 
+$(document).on('mouseover', '.tooltip-base-el[data-tooltip-content]', function() {
+    let el = $(this);
+    showTooltip(
+        el.attr('data-tooltip-content'),
+        el.attr('id'),
+        el.attr('data-tooltip-position') || 'top',
+        el.attr('data-tooltip-width') || '220px'
+    );
+});
+
+$(document).on('mouseout', '.tooltip-base-el[data-tooltip-content]', function() {
+    hideTooltip();
+});
+
 window.tooltip = {
     generate(content, baseEl, id, position = 'top', width = '220px') {
-        return `<span id="${id}" class="tooltip-base-el" onmouseover="showTooltip('${content}', '${id}', '${position}', '${width}')" onmouseout="hideTooltip()" onclick="return">${baseEl}</span>`;
+        return `<span id="${escapeAttr(id)}" class="tooltip-base-el" data-tooltip-content="${escapeAttr(content)}" data-tooltip-position="${escapeAttr(position)}" data-tooltip-width="${escapeAttr(width)}" onclick="return">${baseEl}</span>`;
     }
 };
