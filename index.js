@@ -5004,7 +5004,8 @@ let unlockEntry = function() {
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
     firebase.auth().fetchSignInMethodsForEmail('sourcechunk+' + mid + '@yandex.com').then((methods) => {
         if (signInAttempts > 15) {
-            // Exponential backoff capped at 30s; at 15+ attempts this always hits the 30s cap
+            // Client-side UX throttle only — actual brute-force protection is handled by
+            // Firebase Auth's server-side rate limiting. Exponential backoff capped at 30s.
             setTimeout(function() {
                 $('.pin.entry').addClass('animated shake wrong').select();
                 $('#unlock-entry').prop('disabled', true).text('Unlock');
@@ -5355,7 +5356,8 @@ let changePin = function() {
         }
 
         if (signInAttempts > 15) {
-            // Exponential backoff capped at 30s; at 15+ attempts this always hits the 30s cap
+            // Client-side UX throttle only — actual brute-force protection is handled by
+            // Firebase Auth's server-side rate limiting. Exponential backoff capped at 30s.
             setTimeout(function() {
                 $('.pin-err').css('visibility', 'visible');
                 $('.pin.old2.first').addClass('wrong').select();
