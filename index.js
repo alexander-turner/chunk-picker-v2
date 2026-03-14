@@ -6850,11 +6850,17 @@ let calcFutureChallenges = function() {
     $('.expand').hide();
     expandChallengeStr = '';
     chunks[infoLockedId] = true;
+    let chunkKeys = Object.keys(chunks);
     let i = 0;
-    while (i < Object.keys(chunks).length) {
-        !!chunkInfo['chunks'][Object.keys(chunks)[i]] && !!chunkInfo['chunks'][Object.keys(chunks)[i]]['Connect'] && Object.keys(chunkInfo['chunks'][Object.keys(chunks)[i]]['Connect']).forEach((id) => {
+    while (i < chunkKeys.length) {
+        let currentKey = chunkKeys[i];
+        !!chunkInfo['chunks'][currentKey] && !!chunkInfo['chunks'][currentKey]['Connect'] && Object.keys(chunkInfo['chunks'][currentKey]['Connect']).forEach((id) => {
             if (!!chunkInfo['chunks'][parseInt(id)]['Name'] && possibleAreas[chunkInfo['chunks'][parseInt(id)]['Name']]) {
-                chunks[chunkInfo['chunks'][parseInt(id)]['Name']] = true;
+                let name = chunkInfo['chunks'][parseInt(id)]['Name'];
+                if (!chunks[name]) {
+                    chunks[name] = true;
+                    chunkKeys.push(name);
+                }
             }
         });
         i++;
