@@ -49,6 +49,10 @@ let selectedChunks = 0;                                                         
 let startingIndex = 3905;                                                       // Index to start chunk numbering at (based on ChunkLite numbers)
 let skip = 208;                                                                 // Number of indices to skip between columns for chunk numbering
 
+const CHUNK_ID_PATTERN = /^[0-9]+(-(W)?[0-9]+)?$/;                             // Matches chunk IDs with optional section (e.g. "1234" or "1234-5" or "1234-W5")
+const CHUNK_SECTION_ID_PATTERN = /^[0-9]+-(W)?[0-9]+$/;                        // Matches chunk-section IDs only (e.g. "1234-5" or "1234-W5")
+const CHUNK_SECTION_INNER_PATTERN = /[0-9]+-(W)?[0-9]+/;                       // Non-anchored chunk-section pattern for substring matching
+
 let prevValueMid = '';                                                          // Previous value of map id at login
 let prevValuePinNew = '';                                                       // Previous value of pin at signup
 let prevValuePin2New = '';                                                      // Previous value of pin2 at signup
@@ -8893,13 +8897,13 @@ let openSearchDetails = function(category, name, prevCategory, prevName) {
         let tempDroprate = 0;
         if (typeof baseChunkData[category][name][source] === "boolean" || !skills.includes(baseChunkData[category][name][source].split('-')[1])) {
             if (chunkInfo['chunks'].hasOwnProperty(source.split('-')[0])) {
-                let realName = source.match(/^[0-9]+(-(W)?[0-9]+)?$/g) ? source.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0] : source;
-                if (source.match(/[0-9]+-(W)?[0-9]+/g)) {
+                let realName = source.match(CHUNK_ID_PATTERN) ? source.match(CHUNK_ID_PATTERN)[0] : source;
+                if (source.match(CHUNK_SECTION_INNER_PATTERN)) {
                     realName = chunkInfo['chunks'][source.match(/[0-9]+/g)[0]]['Nickname'] + '(' + source.match(/[0-9]+/g)[0] + ' - Section ' + source.split('-')[1] + ')';
-                } else if (source.match(/^[0-9]+(-(W)?[0-9]+)?$/g) && !!chunkInfo['chunks'][source.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Name']) {
-                    realName = chunkInfo['chunks'][source.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Name'];
-                } else if (source.match(/^[0-9]+(-(W)?[0-9]+)?$/g) && !!chunkInfo['chunks'][source.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Nickname']) {
-                    realName = chunkInfo['chunks'][source.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Nickname'] + '(' + source.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0] + ')';
+                } else if (source.match(CHUNK_ID_PATTERN) && !!chunkInfo['chunks'][source.match(CHUNK_ID_PATTERN)[0]]['Name']) {
+                    realName = chunkInfo['chunks'][source.match(CHUNK_ID_PATTERN)[0]]['Name'];
+                } else if (source.match(CHUNK_ID_PATTERN) && !!chunkInfo['chunks'][source.match(CHUNK_ID_PATTERN)[0]]['Nickname']) {
+                    realName = chunkInfo['chunks'][source.match(CHUNK_ID_PATTERN)[0]]['Nickname'] + '(' + source.match(CHUNK_ID_PATTERN)[0] + ')';
                 }
                 formattedSource += realName.replaceAll(/~\|/g, '').replaceAll(/\|~/g, '').replaceAll(/\*/g, '');
             } else {
@@ -10766,7 +10770,7 @@ let showDetails = function(challenge, skill, dataType, isNested) {
                     if (!!chunkInfo['codeItems'][type + 'Plus'] && !!chunkInfo['codeItems'][type + 'Plus'][el]) {
                         let validElem = false;
                         chunkInfo['codeItems'][type + 'Plus'][el].forEach((elem) => {
-                            if (chunksIn.hasOwnProperty(elem) || (elem.match(/^[0-9]+(-(W)?[0-9]+)?$/g) && chunksIn.hasOwnProperty(elem.match(/[0-9]+/g)[0]) && unlockedSectionsIn.hasOwnProperty(elem.match(/[0-9]+/g)[0]) && unlockedSectionsIn[elem.match(/[0-9]+/g)[0]][elem.match(/[0-9]+/g)[1]]) || possibleAreasIn.hasOwnProperty(elem)) {
+                            if (chunksIn.hasOwnProperty(elem) || (elem.match(CHUNK_ID_PATTERN) && chunksIn.hasOwnProperty(elem.match(/[0-9]+/g)[0]) && unlockedSectionsIn.hasOwnProperty(elem.match(/[0-9]+/g)[0]) && unlockedSectionsIn[elem.match(/[0-9]+/g)[0]][elem.match(/[0-9]+/g)[1]]) || possibleAreasIn.hasOwnProperty(elem)) {
                                 els.push(elem);
                                 validElem = true;
                             }
@@ -10780,18 +10784,18 @@ let showDetails = function(challenge, skill, dataType, isNested) {
                                 writtenPlus = true;
                                 formattedSource = `<a class='link noscroll' href="${"https://oldschool.runescape.wiki/w/" + encodeForUrl(element.replaceAll(/\|/g, '').replaceAll(/~/g, '').replaceAll(/\*/g, ''))}" target="_blank">${element.replaceAll(/\|/g, '').replaceAll(/~/g, '').replaceAll(/\*/g, '')}</a>`;
                                 $('#details-data').append(`<span class="noscroll"><b class="noscroll"><span class='noscroll special'>-</span> ${formattedSource}</b></span><br />`);
-                            } else if (!!element.match(/^[0-9]+(-(W)?[0-9]+)?$/g) && chunksIn.hasOwnProperty(element.match(/[0-9]+/g)[0]) && (!element.match(/[0-9]+-(W)?[0-9]+/g) || !unlockedSectionsIn.hasOwnProperty(element.match(/[0-9]+/g)[0]) || unlockedSectionsIn[element.match(/[0-9]+/g)[0]][element.match(/[0-9]+/g)[1]])) {
+                            } else if (!!element.match(CHUNK_ID_PATTERN) && chunksIn.hasOwnProperty(element.match(/[0-9]+/g)[0]) && (!element.match(CHUNK_SECTION_INNER_PATTERN) || !unlockedSectionsIn.hasOwnProperty(element.match(/[0-9]+/g)[0]) || unlockedSectionsIn[element.match(/[0-9]+/g)[0]][element.match(/[0-9]+/g)[1]])) {
                                 written = true;
                                 writtenPlus = true;
-                                let realName = element.match(/^[0-9]+(-(W)?[0-9]+)?$/g) ? element.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0] : element;
+                                let realName = element.match(CHUNK_ID_PATTERN) ? element.match(CHUNK_ID_PATTERN)[0] : element;
                                 if (el.match(/[A-Za-z ]+\([0-9]+\)/g)) {
                                     realName = element;
-                                } else if (element.match(/[0-9]+-(W)?[0-9]+/g)) {
+                                } else if (element.match(CHUNK_SECTION_INNER_PATTERN)) {
                                     realName = chunkInfo['chunks'][element.match(/[0-9]+/g)[0]]['Nickname'] + '(' + element.match(/[0-9]+/g)[0] + ' - Section ' + element.split('-')[1] + ')';
-                                } else if (element.match(/^[0-9]+(-(W)?[0-9]+)?$/g) && !!chunkInfo['chunks'][element.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Name']) {
-                                    realName = chunkInfo['chunks'][element.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Name'];
-                                } else if (element.match(/^[0-9]+(-(W)?[0-9]+)?$/g) && !!chunkInfo['chunks'][element.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Nickname']) {
-                                    realName = chunkInfo['chunks'][element.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Nickname'] + '(' + element.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0] + ')';
+                                } else if (element.match(CHUNK_ID_PATTERN) && !!chunkInfo['chunks'][element.match(CHUNK_ID_PATTERN)[0]]['Name']) {
+                                    realName = chunkInfo['chunks'][element.match(CHUNK_ID_PATTERN)[0]]['Name'];
+                                } else if (element.match(CHUNK_ID_PATTERN) && !!chunkInfo['chunks'][element.match(CHUNK_ID_PATTERN)[0]]['Nickname']) {
+                                    realName = chunkInfo['chunks'][element.match(CHUNK_ID_PATTERN)[0]]['Nickname'] + '(' + element.match(CHUNK_ID_PATTERN)[0] + ')';
                                 }
                                 formattedSource = realName.replaceAll(/\|/g, '').replaceAll(/~/g, '').replaceAll(/\*/g, '');
                                 $('#details-data').append(`<span class="noscroll"><b class="noscroll"><span class='noscroll special'>-</span> ${formattedSource}</b></span><br />`);
@@ -10806,31 +10810,31 @@ let showDetails = function(challenge, skill, dataType, isNested) {
                             written = true;
                             formattedSource = `<a class='link noscroll' href="${"https://oldschool.runescape.wiki/w/" + encodeForUrl(el.replaceAll(/\|/g, '').replaceAll(/~/g, '').replaceAll(/\*/g, ''))}" target="_blank">${el.replaceAll(/\|/g, '').replaceAll(/~/g, '').replaceAll(/\*/g, '')}</a>`;
                             $('#details-data').append(`<span class="noscroll"><b class="noscroll">${formattedSource}</b></span><br />`);
-                        } else if (!!el.match(/^[0-9]+(-(W)?[0-9]+)?$/g) && chunksIn.hasOwnProperty(el.match(/[0-9]+/g)[0]) && (!el.match(/[0-9]+-(W)?[0-9]+/g) || !unlockedSectionsIn.hasOwnProperty(el.match(/[0-9]+/g)[0]) || unlockedSectionsIn[el.match(/[0-9]+/g)[0]][el.match(/(W)?[0-9]+/g)[1]])) {
+                        } else if (!!el.match(CHUNK_ID_PATTERN) && chunksIn.hasOwnProperty(el.match(/[0-9]+/g)[0]) && (!el.match(CHUNK_SECTION_INNER_PATTERN) || !unlockedSectionsIn.hasOwnProperty(el.match(/[0-9]+/g)[0]) || unlockedSectionsIn[el.match(/[0-9]+/g)[0]][el.match(/(W)?[0-9]+/g)[1]])) {
                             written = true;
-                            let realName = el.match(/^[0-9]+(-(W)?[0-9]+)?$/g) ? el.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0] : el;
+                            let realName = el.match(CHUNK_ID_PATTERN) ? el.match(CHUNK_ID_PATTERN)[0] : el;
                             if (el.match(/[A-Za-z ]+\([0-9]+\)/g)) {
                                 realName = el;
-                            } else if (el.match(/[0-9]+-(W)?[0-9]+/g)) {
+                            } else if (el.match(CHUNK_SECTION_INNER_PATTERN)) {
                                 realName = chunkInfo['chunks'][el.match(/[0-9]+/g)[0]]['Nickname'] + '(' + el.match(/[0-9]+/g)[0] + ' - Section ' + el.split('-')[1] + ')';
-                            } else if (el.match(/^[0-9]+(-(W)?[0-9]+)?$/g) && !!chunkInfo['chunks'][el.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Name']) {
-                                realName = chunkInfo['chunks'][el.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Name'];
-                            } else if (el.match(/^[0-9]+(-(W)?[0-9]+)?$/g) && !!chunkInfo['chunks'][el.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Nickname']) {
-                                realName = chunkInfo['chunks'][el.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Nickname'] + '(' + el.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0] + ')';
+                            } else if (el.match(CHUNK_ID_PATTERN) && !!chunkInfo['chunks'][el.match(CHUNK_ID_PATTERN)[0]]['Name']) {
+                                realName = chunkInfo['chunks'][el.match(CHUNK_ID_PATTERN)[0]]['Name'];
+                            } else if (el.match(CHUNK_ID_PATTERN) && !!chunkInfo['chunks'][el.match(CHUNK_ID_PATTERN)[0]]['Nickname']) {
+                                realName = chunkInfo['chunks'][el.match(CHUNK_ID_PATTERN)[0]]['Nickname'] + '(' + el.match(CHUNK_ID_PATTERN)[0] + ')';
                             }
                             formattedSource = realName.replaceAll(/\|/g, '').replaceAll(/~/g, '').replaceAll(/\*/g, '');
                             $('#details-data').append(`<span class="noscroll"><b class="noscroll">${formattedSource}</b></span><br />`);
                         } else {
                             written = true;
-                            let realName = el.match(/^[0-9]+(-(W)?[0-9]+)?$/g) ? el.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0] : el;
+                            let realName = el.match(CHUNK_ID_PATTERN) ? el.match(CHUNK_ID_PATTERN)[0] : el;
                             if (el.match(/[A-Za-z ]+\([0-9]+\)/g)) {
                                 realName = el;
-                            } else if (el.match(/[0-9]+-(W)?[0-9]+/g)) {
+                            } else if (el.match(CHUNK_SECTION_INNER_PATTERN)) {
                                 realName = chunkInfo['chunks'][el.match(/[0-9]+/g)[0]]['Nickname'] + '(' + el.match(/[0-9]+/g)[0] + ' - Section ' + el.split('-')[1] + ')';
-                            } else if (el.match(/^[0-9]+(-(W)?[0-9]+)?$/g) && !!chunkInfo['chunks'][el.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Name']) {
-                                realName = chunkInfo['chunks'][el.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Name'];
-                            } else if (el.match(/^[0-9]+(-(W)?[0-9]+)?$/g) && !!chunkInfo['chunks'][el.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Nickname']) {
-                                realName = chunkInfo['chunks'][el.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Nickname'] + '(' + el.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0] + ')';
+                            } else if (el.match(CHUNK_ID_PATTERN) && !!chunkInfo['chunks'][el.match(CHUNK_ID_PATTERN)[0]]['Name']) {
+                                realName = chunkInfo['chunks'][el.match(CHUNK_ID_PATTERN)[0]]['Name'];
+                            } else if (el.match(CHUNK_ID_PATTERN) && !!chunkInfo['chunks'][el.match(CHUNK_ID_PATTERN)[0]]['Nickname']) {
+                                realName = chunkInfo['chunks'][el.match(CHUNK_ID_PATTERN)[0]]['Nickname'] + '(' + el.match(CHUNK_ID_PATTERN)[0] + ')';
                             }
                             $('#details-data').append(`<span class="noscroll red"><b class="noscroll">${realName}</b></span><br />`);
                         }
@@ -10870,13 +10874,13 @@ let showDetails = function(challenge, skill, dataType, isNested) {
                                 if ((chunkInfo['codeItems']['boostItems'].hasOwnProperty(skill) && chunkInfo['codeItems']['boostItems'][skill].hasOwnProperty(element)) || ((!chunkInfo['challenges'][skill][challenge].hasOwnProperty('NonShop') || !chunkInfo['challenges'][skill][challenge]['NonShop'] || baseChunkDataIn[type][element][source] !== 'shop') && (rules['Wield Crafted Items'] || ![...combatSkills, 'BiS', 'Extra'].includes(skill) || chunkInfo['challenges'][skill][challenge]['Label'] === 'Fill Stashes' || (typeof baseChunkDataIn[type][element][source] !== 'string' || !processingSkill[baseChunkDataIn[type][element][source].split('-')[1]])))) {
                                     if (typeof baseChunkDataIn[type][element][source] === "boolean" || !skills.includes(baseChunkDataIn[type][element][source].split('-')[1])) {
                                         if (chunkInfo['chunks'].hasOwnProperty(source.split('-')[0])) {
-                                            let realName = source.match(/^[0-9]+(-(W)?[0-9]+)?$/g) ? source.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0] : source;
-                                            if (source.match(/[0-9]+-(W)?[0-9]+/g)) {
+                                            let realName = source.match(CHUNK_ID_PATTERN) ? source.match(CHUNK_ID_PATTERN)[0] : source;
+                                            if (source.match(CHUNK_SECTION_INNER_PATTERN)) {
                                                 realName = chunkInfo['chunks'][source.match(/[0-9]+/g)[0]]['Nickname'] + '(' + source.match(/[0-9]+/g)[0] + ' - Section ' + source.split('-')[1] + ')';
-                                            } else if (source.match(/^[0-9]+(-(W)?[0-9]+)?$/g) && !!chunkInfo['chunks'][source.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Name']) {
-                                                realName = chunkInfo['chunks'][source.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Name'];
-                                            } else if (source.match(/^[0-9]+(-(W)?[0-9]+)?$/g) && !!chunkInfo['chunks'][source.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Nickname']) {
-                                                realName = chunkInfo['chunks'][source.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Nickname'] + '(' + source.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0] + ')';
+                                            } else if (source.match(CHUNK_ID_PATTERN) && !!chunkInfo['chunks'][source.match(CHUNK_ID_PATTERN)[0]]['Name']) {
+                                                realName = chunkInfo['chunks'][source.match(CHUNK_ID_PATTERN)[0]]['Name'];
+                                            } else if (source.match(CHUNK_ID_PATTERN) && !!chunkInfo['chunks'][source.match(CHUNK_ID_PATTERN)[0]]['Nickname']) {
+                                                realName = chunkInfo['chunks'][source.match(CHUNK_ID_PATTERN)[0]]['Nickname'] + '(' + source.match(CHUNK_ID_PATTERN)[0] + ')';
                                             }
                                             formattedSource += `<span class='noscroll ${typeof baseChunkDataIn[type][element][source] !== "boolean" && (baseChunkDataIn[type][element][source].includes('primary-') || baseChunkDataIn[type][element][source].includes('shop')) ? 'green' : ''}'>${realName.replaceAll(/\|/g, '').replaceAll(/~/g, '').replaceAll(/\*/g, '')}</span>`;
                                         } else {
@@ -10917,13 +10921,13 @@ let showDetails = function(challenge, skill, dataType, isNested) {
                             if ((chunkInfo['codeItems']['boostItems'].hasOwnProperty(skill) && chunkInfo['codeItems']['boostItems'][skill].hasOwnProperty(el)) || ((!chunkInfo['challenges'][skill][challenge].hasOwnProperty('NonShop') || !chunkInfo['challenges'][skill][challenge]['NonShop'] || baseChunkDataIn[type][el][source] !== 'shop') && (rules['Wield Crafted Items'] || ![...combatSkills, 'BiS', 'Extra'].includes(skill) || chunkInfo['challenges'][skill][challenge]['Label'] === 'Fill Stashes' || (typeof baseChunkDataIn[type][el][source] !== 'string' || !processingSkill[baseChunkDataIn[type][el][source].split('-')[1]])))) {
                                 if (typeof baseChunkDataIn[type][el][source] === "boolean" || !skills.includes(baseChunkDataIn[type][el][source].split('-')[1])) {
                                     if (chunkInfo['chunks'].hasOwnProperty(source.split('-')[0])) {
-                                        let realName = source.match(/^[0-9]+(-(W)?[0-9]+)?$/g) ? source.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0] : source;
-                                        if (source.match(/[0-9]+-(W)?[0-9]+/g)) {
+                                        let realName = source.match(CHUNK_ID_PATTERN) ? source.match(CHUNK_ID_PATTERN)[0] : source;
+                                        if (source.match(CHUNK_SECTION_INNER_PATTERN)) {
                                             realName = chunkInfo['chunks'][source.match(/[0-9]+/g)[0]]['Nickname'] + '(' + source.match(/[0-9]+/g)[0] + ' - Section ' + source.split('-')[1] + ')';
-                                        } else if (source.match(/^[0-9]+(-(W)?[0-9]+)?$/g) && !!chunkInfo['chunks'][source.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Name']) {
-                                            realName = chunkInfo['chunks'][source.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Name'];
-                                        } else if (source.match(/^[0-9]+(-(W)?[0-9]+)?$/g) && !!chunkInfo['chunks'][source.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Nickname']) {
-                                            realName = chunkInfo['chunks'][source.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0]]['Nickname'] + '(' + source.match(/^[0-9]+(-(W)?[0-9]+)?$/g)[0] + ')';
+                                        } else if (source.match(CHUNK_ID_PATTERN) && !!chunkInfo['chunks'][source.match(CHUNK_ID_PATTERN)[0]]['Name']) {
+                                            realName = chunkInfo['chunks'][source.match(CHUNK_ID_PATTERN)[0]]['Name'];
+                                        } else if (source.match(CHUNK_ID_PATTERN) && !!chunkInfo['chunks'][source.match(CHUNK_ID_PATTERN)[0]]['Nickname']) {
+                                            realName = chunkInfo['chunks'][source.match(CHUNK_ID_PATTERN)[0]]['Nickname'] + '(' + source.match(CHUNK_ID_PATTERN)[0] + ')';
                                         }
                                         formattedSource += `<span class='noscroll ${typeof baseChunkDataIn[type][el][source] !== "boolean" && (baseChunkDataIn[type][el][source].includes('primary-') || baseChunkDataIn[type][el][source].includes('shop')) ? 'green' : ''}'>${realName.replaceAll(/\|/g, '').replaceAll(/~/g, '').replaceAll(/\*/g, '')}</span>`;
                                     } else {
@@ -12234,7 +12238,7 @@ let getQuestInfo = function(quest) {
     });
     questChunks = [];
     chunkInfo['quests'][quest].split(', ').forEach((chunkId) => {
-        if (chunkId.match(/^[0-9]+-(W)?[0-9]+$/g)) {
+        if (chunkId.match(CHUNK_SECTION_ID_PATTERN)) {
             chunkId = chunkId.split('-')[0];
         }
         let chunkName = chunkId;
@@ -12247,7 +12251,7 @@ let getQuestInfo = function(quest) {
         } else if (chunksPlus[chunkName.split('[+]')[0] + '[+]']) {
             $('.panel-questdata').append(`<b class="noscroll"><div class="noscroll"><i class='noscroll'>Any ${chunkName.split('[+]x')[1] || 1} of:</i></div></b>`);
             chunksPlus[chunkName.split('[+]')[0] + '[+]'].forEach((plus) => {
-                if (plus.match(/^[0-9]+-(W)?[0-9]+$/g)) {
+                if (plus.match(CHUNK_SECTION_ID_PATTERN)) {
                     plus = plus.split('-')[0];
                 }
                 let abovegroundPlus = false;
