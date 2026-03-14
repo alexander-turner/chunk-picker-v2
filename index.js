@@ -1671,15 +1671,24 @@ function replaceAll(str, match, replacement) {
     return str.replace(new RegExp(escapeRegExp(match), 'g'), ()=>replacement);
 }
 
+// Attempt to initialize canvas once all resources are loaded
+let initializationDone = false;
+let tryInitialize = function() {
+    if (initializationDone || !readyToDrawImage || readyToDrawIcons !== 0 || !pageReady) {
+        return;
+    }
+    initializationDone = true;
+    centerCanvas('quick');
+    drawCanvas();
+};
+
 // Load osrs sticker images
 stickerChoicesOsrs.forEach((sticker) => {
     osrsStickers[sticker] = new Image();
     osrsStickers[sticker].src = "resources/SVG/" + sticker + "-osrs.svg";
     osrsStickers[sticker].addEventListener("load", e => {
         readyToDrawIcons--;
-        if (readyToDrawImage && readyToDrawIcons === 0 && pageReady) {
-            drawCanvas();
-        }
+        tryInitialize();
     });
 });
 
@@ -1688,9 +1697,7 @@ mapImg.addEventListener("load", e => {
     imgW = mapImg.width;
     imgH = mapImg.height;
     readyToDrawImage = true;
-    if (readyToDrawImage && readyToDrawIcons === 0 && pageReady) {
-        centerCanvas('quick');
-    }
+    tryInitialize();
 });
 mapImg.src = "osrs_world_map.png?v=6.9.38";
 
@@ -3908,9 +3915,7 @@ $(document).ready(function() {
     $(document).on('touchend', function(e){handleMouseUp(e);});
 
     pageReady = true;
-    if (readyToDrawImage && readyToDrawIcons === 0 && pageReady) {
-        centerCanvas('quick');
-    }
+    tryInitialize();
 });
 
 // ------------------------------------------------------------
