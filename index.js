@@ -13418,12 +13418,22 @@ let setData = function() {
                     return;
                 });
             } else {
-                myRef.update({...databaseObject});
+                myRef.update({...databaseObject}).catch(function(error) {
+                    console.error('Firebase write failed:', error);
+                    regainConnectivity(() => {
+                        setData();
+                    });
+                });
             }
         });
     } else {
         firebase.auth().signInWithEmailAndPassword('sourcechunk+' + mid + '@yandex.com', savedPin + mid).then(function() {
-            myRef.update({...databaseObject});
+            myRef.update({...databaseObject}).catch(function(error) {
+                console.error('Firebase write failed:', error);
+                regainConnectivity(() => {
+                    setData();
+                });
+            });
         }).catch(function(error) { console.error(error) });
     }
 }
