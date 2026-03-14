@@ -12636,21 +12636,13 @@ let combineJSONs = function(a, b) {
 }
 
 // Checks if image exists
-let checkIfImageExists = function(url, callback) {
-    const img = new Image();
-    img.src = url;
-
-    if (img.complete) {
-        callback(true);
-    } else {
-        img.onload = () => {
-            callback(true);
-        };
-        
-        img.onerror = () => {
-            callback(false);
-        };
-    }
+let checkIfImageExists = function(url) {
+    return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = url;
+    });
 }
 
 // Preloads chunk images
