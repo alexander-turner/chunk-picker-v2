@@ -71,6 +71,33 @@ admin.js
 chunkpicker-firebase-adminsdk-m7j3n-026a6d3824.json
 chunkpicker_data_4.json
 package-lock.json
-package.json
 save_file.json
 /functions
+
+# pnpm
+.pnpm-store/
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+out/
+
+# Environment files
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.uv/

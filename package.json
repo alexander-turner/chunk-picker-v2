@@ -1,0 +1,44 @@
+{
+  "name": "chunk-picker-v2",
+  "version": "1.0.0",
+  "description": "Chunk Picker V2",
+  "type": "module",
+  "packageManager": "pnpm@10.28.1",
+  "scripts": {
+    "postinstall": "git config core.hooksPath .hooks || true",
+    "format": "prettier --write ."
+  },
+  "lint-staged": {
+    "*.{css,scss}": [
+      "prettier --write"
+    ],
+    "*.json": [
+      "prettier --write"
+    ],
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --write"
+    ],
+    "*.{yaml,yml}": [
+      "prettier --write"
+    ],
+    "*.md": [
+      "prettier --write"
+    ],
+    ".claude/skills/*/SKILL.md": [
+      ".hooks/lint-skills.sh"
+    ],
+    "{*.sh,.hooks/*}": [
+      "shfmt -i 2 -w"
+    ],
+    "*.py": [
+      "ruff check --fix",
+      "ruff format"
+    ]
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.4.1",
+    "@commitlint/config-conventional": "^20.4.1",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.0.0"
+  }
+}
