@@ -29,8 +29,8 @@ let zoom = 350;                                                                 
 let fontZoom = 16;                                                              // Font size zoom
 let labelZoom = 96;                                                             // Selected label font size zoom
 let scale = 30;                                                                 // Amount zoomed every 'zoom' action
-let fullSize = 1632;                                                            // Amount of chunks present
-let rowSize = 48;                                                               // Amount of chunks per row
+let fullSize = 1632;                                                            // Total number of chunks in the grid (34 rows x 48 columns)
+let rowSize = 48;                                                               // Number of chunks per row in the grid
 let scrollLeft = 0;                                                             // Amount the board is scrolled left offscreen
 let prevScrollLeft = 0;                                                         // Amount the board was previously scrolled left offscreen
 let scrollTop = 0;                                                              // Amount the board is scrolled up offscreen
@@ -41,13 +41,13 @@ let chunkInfo = {};                                                             
 let infoLockedId = -1;                                                          // Id of chunk locked for info
 let userName = '';                                                              // Runescape Username of user
 
-let ratio = 6528 / 9216;                                                        // Image ratio
+let ratio = 6528 / 9216;                                                        // Aspect ratio of the world map image (width / height)
 let movedNum = 0;                                                               // Amount of times mouse is moved while dragging
 let selectedNum = 1;                                                            // Current index of selected chunks
 let unlockedChunks = 0;                                                         // Number of unlocked chunks
 let selectedChunks = 0;                                                         // Number of selected chunks
-let startingIndex = 3905;                                                       // Index to start chunk numbering at (based on ChunkLite numbers)
-let skip = 208;                                                                 // Number of indices to skip between columns for chunk numbering
+let startingIndex = 3905;                                                       // Starting chunk index from ChunkLite numbering scheme
+let skip = 208;                                                                 // Offset between rows when mapping chunk IDs to grid positions
 
 const CHUNK_ID_PATTERN = /^[0-9]+(-(W)?[0-9]+)?$/;                             // Matches chunk IDs with optional section (e.g. "1234" or "1234-5" or "1234-W5")
 const CHUNK_SECTION_ID_PATTERN = /^[0-9]+-(W)?[0-9]+$/;                        // Matches chunk-section IDs only (e.g. "1234-5" or "1234-W5")
