@@ -3083,7 +3083,7 @@ let openRollChunkCanvas = async function(el, rand, sNum, rand2, sNum2, isUnpick)
     $('#fancyRollModal, .roll-chunk-spinner').show();
     $('#fancyRollModal .modal-content').hide();
     $('.canvasDiv').css({'opacity': 1});
-    await preloadChunkImages(el);
+    try { await preloadChunkImages(el); } catch (e) { console.warn('Failed to preload chunk images:', e); }
     isPreloading = false;
     $('.roll-chunk-spinner').hide();
     $('#fancyRollModal .modal-content').show();
@@ -7615,7 +7615,7 @@ let resetSectionVars = async function(chunkId) {
     !!chunkInfo['sections'][chunkId] && Object.keys(chunkInfo['sections'][chunkId]).forEach((section) => {
         sectionUrls[section] = './resources/section_overlays/' + chunkId + '-' + section + '.png';
     });
-    await preloadImages([sectionMainUrl, ...Object.values(sectionUrls)]);
+    try { await preloadImages([sectionMainUrl, ...Object.values(sectionUrls)]); } catch (e) { console.warn('Failed to preload section images:', e); }
     sectionChunkId = chunkId;
     hoveredNumSection = '-1';
     sectionImgs = [];
@@ -12666,7 +12666,7 @@ let preloadChunkImages = async function(elArr) {
         yCoord = 66 - (parseInt(chunkId) % 256);
         imgs.push('./resources/chunk_images/row-' + yCoord + '-column-' + xCoord + '.png');
     });
-    await preloadImages(imgs);
+    try { await preloadImages(imgs); } catch (e) { console.warn('Failed to preload images:', e); }
 }
 
 // Preloads images
