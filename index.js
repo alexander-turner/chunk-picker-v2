@@ -6503,8 +6503,7 @@ let setupCurrentChallenges = function(tempChallengeArr, noDisplay, noClear) {
             let boost = 0;
             if (!!tempChallengeArr[skill] && tempChallengeArr[skill].match(/\{[0-9]+\}/g)) {
                 skillTask = tempChallengeArr[skill].replaceAll(/\{[0-9]+\}/g, '');
-                let boostMatch = tempChallengeArr[skill].match(/\{[0-9]+\}/g);
-                let boostInner = boostMatch ? boostMatch[0].match(/\d+/) : null;
+                let boostInner = tempChallengeArr[skill].match(/\{[0-9]+\}/g)[0].match(/\d+/);
                 boost = boostInner ? boostInner[0] : 0;
             }
             if (boost === 0) {
@@ -6699,11 +6698,11 @@ let setupCurrentChallengesFromSaved = function() {
         let skillTask = Object.keys(activeTasks[skill])[0];
         let level;
         let boost;
-        let boostMatch2 = activeTasks[skill][skillTask].match(/\{[0-9]+\}/g);
-        if (boostMatch2) {
+        let boostMatch = activeTasks[skill][skillTask].match(/\{[0-9]+\}/g);
+        if (boostMatch) {
             level = activeTasks[skill][skillTask].split('{')[0];
-            let boostInner2 = boostMatch2[0].match(/\d+/);
-            boost = boostInner2 ? boostInner2[0] : 0;
+            let boostInner = boostMatch[0].match(/\d+/);
+            boost = boostInner ? boostInner[0] : 0;
         } else {
             level = activeTasks[skill][skillTask];
             boost = 0;
@@ -7280,15 +7279,15 @@ let printUntakenMids = function() {
 // Prints all differences with the split chunkinfo (debug)
 let printSplitChunksDiff = async function() {
     let diffArr = {};
-    let response;
+    let data;
     try {
-        response = await fetch('./chunkpicker-chunkinfo-export-split.json');
+        let response = await fetch('./chunkpicker-chunkinfo-export-split.json');
         if (!response.ok) throw new Error('HTTP ' + response.status);
+        data = await response.json();
     } catch (error) {
         console.error('Failed to load split chunk info:', error);
         return;
     }
-    const data = await response.json();
     let chunkInfoSplit = data;
     let chunks2 = {};
     Object.keys(chunkInfoSplit['chunks']).forEach((chunk) => {
@@ -9269,9 +9268,8 @@ let openHighest2 = function(notScrollTop) {
                     let boost = 0;
                     if (!!highestOverall[skill] && highestOverall[skill].match(/\{[0-9]+\}/g)) {
                         skillTask = highestOverall[skill].replaceAll(/\{[0-9]+\}/g, '');
-                        let boostMatch3 = highestOverall[skill].match(/\{[0-9]+\}/g);
-                        let boostInner3 = boostMatch3 ? boostMatch3[0].match(/\d+/) : null;
-                        boost = boostInner3 ? boostInner3[0] : 0;
+                        let boostInner = highestOverall[skill].match(/\{[0-9]+\}/g)[0].match(/\d+/);
+                        boost = boostInner ? boostInner[0] : 0;
                     }
                     let completedNum = checkedAllTasks.hasOwnProperty(skill) && globalValids.hasOwnProperty(skill) ? Math.min(Object.keys(checkedAllTasks[skill]).filter(task => globalValids[skill].hasOwnProperty(task) && (!backlog.hasOwnProperty(skill) || !backlog[skill].hasOwnProperty(task))).length, Object.keys(globalValids[skill]).filter(task => !backlog.hasOwnProperty(skill) || !backlog[skill].hasOwnProperty(task)).length) : 0;
                     $(`.${combatStyle.replaceAll(' ', '_')}-body`).append(`<div class='noscroll row'><span class='noscroll skill-icon-wrapper'><img class='noscroll skill-icon' src='./resources/${skill}_skill.png' title='${skill}' /></span><span class='noscroll skill-text${settings['allTasks'] ? ' narrow' : ''}'>${(testMode || !(viewOnly || inEntry || locked)) ? `<span class='noscroll edit-highest' onclick='openPassiveModal("${skill}")'><i class="noscroll fa-solid fa-edit"></i></span>` : ''}${(!!skillTask ? '<b class="noscroll">[' + (boost > 0 ? (chunkInfo['challenges'][skill][skillTask]['Level'] - boost) + '] (+' + boost + ')' : chunkInfo['challenges'][skill][skillTask]['Level'] + ']') + '</b> ' : '') + (skillTask || 'None').replaceAll('~', '').replaceAll('|', '')} ${skillTask ? `<span class="task-info" onclick="showDetails('${encodeRFC5987ValueChars(skillTask)}', '${skill}', '')"><i class="info-icon fa-solid fa-info-circle"></i></span>` : ''}</span><span class='noscroll skill-button ${onMobile ? 'mobile' : ''} ${(primarySkill[skill] ? 'active' : '')}'>${primarySkill[skill] ? `<div class='noscroll methods-button' onclick='viewPrimaryMethodsOrTasks("${skill}", false)'>View Methods</div></span>` : `<div class='noscroll'>None</div></span>`}${settings['allTasks'] ? `<span class='noscroll skill-button2 ${(!!globalValids[skill] && Object.keys(globalValids[skill]).filter(task => !backlog.hasOwnProperty(skill) || !backlog[skill].hasOwnProperty(task)).length > 0 ? 'active' : '')}'>${!!globalValids[skill] && Object.keys(globalValids[skill]).filter(task => !backlog.hasOwnProperty(skill) || !backlog[skill].hasOwnProperty(task)).length > 0 ? `<div class='noscroll tasks-button ${skill}-tasks-button ${Object.keys(globalValids[skill]).filter(task => !backlog.hasOwnProperty(skill) || !backlog[skill].hasOwnProperty(task)).length > completedNum ? 'yellow' : 'green'}' onclick='viewPrimaryMethodsOrTasks("${skill}", true)'>Tasks <span class='noscroll'>(${completedNum}/${Object.keys(globalValids[skill]).filter(task => !backlog.hasOwnProperty(skill) || !backlog[skill].hasOwnProperty(task)).length})</span></div>` : `<div class='noscroll'>None</div>`}` : ''}${(testMode || !(viewOnly || inEntry || locked)) ? `<span class='noscroll manualprimary-highest' onclick='openManualPrimaryContextMenu("${skill}")'><i class="noscroll fa-solid fa-cogs"></i></span>` : ''}</span></div>`);
@@ -12732,35 +12730,35 @@ let loadData = async function(startup) {
     if (!myRef) {
         return;
     }
-    let response;
+    let data;
     try {
-        response = await fetch('./chunkpicker-chunkinfo-export.json');
+        let response = await fetch('./chunkpicker-chunkinfo-export.json');
         if (!response.ok) throw new Error('HTTP ' + response.status);
+        data = await response.json();
     } catch (error) {
         console.error('Failed to load chunk info data:', error);
         chunkInfo = chunkInfo || {};
-        $('.custom-tooltiptext').html('Failed to load chunk data. Please refresh the page.').css('visibility', 'visible');
+        $('.loading-bar-text').css('color', 'yellow').text('Failed to load chunk data. Please refresh.');
         return;
     }
-    const data = await response.json();
     gotData = true;
     chunkInfo = data;
     highestOverall = {};
     globalValids = {};
     setCodeItems();
 
-    let response2;
+    let data2;
     try {
-        response2 = await fetch('./tasksMap.json');
+        let response2 = await fetch('./tasksMap.json');
         if (!response2.ok) throw new Error('HTTP ' + response2.status);
+        data2 = await response2.json();
     } catch (error) {
         console.error('Failed to load tasks map:', error);
         tasksMap = tasksMap || {};
         tasksMapReverse = tasksMapReverse || {};
-        $('.custom-tooltiptext').html('Failed to load task data. Please refresh the page.').css('visibility', 'visible');
+        $('.loading-bar-text').css('color', 'yellow').text('Failed to load task data. Please refresh.');
         return;
     }
-    const data2 = await response2.json();
     tasksMap = data2;
     tasksMapReverse = Object.fromEntries(Object.entries(data2).map(([name, id]) => [id, name]));
 
@@ -13510,7 +13508,11 @@ let rollMID = function(count) {
         return;
     }
     databaseRef.child('mapids').once('value', function(snap) {
-        let existingMapIds = snap.val() || {};
+        if (snap.val() === null) {
+            console.error('Failed to load existing map IDs');
+            return;
+        }
+        let existingMapIds = snap.val();
         while (badNums && rollCount < 250) {
             char1 = String.fromCharCode(97 + Math.floor(Math.random() * 26));
             char2 = String.fromCharCode(97 + Math.floor(Math.random() * 26));

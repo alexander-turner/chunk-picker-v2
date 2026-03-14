@@ -14,7 +14,8 @@ const tooltipTexts = {
 
 function escapeAttr(str) {
     return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;')
-                      .replace(/'/g, '&#39;').replace(/</g, '&lt;');
+                      .replace(/'/g, '&#39;').replace(/</g, '&lt;')
+                      .replace(/>/g, '&gt;');
 }
 
 let showTooltip = function(content, id, position, width) {
