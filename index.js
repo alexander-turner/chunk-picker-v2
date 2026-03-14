@@ -1671,7 +1671,11 @@ function replaceAll(str, match, replacement) {
     return str.replace(new RegExp(escapeRegExp(match), 'g'), ()=>replacement);
 }
 
-// Attempt to initialize canvas once all resources are loaded
+// Attempt to initialize canvas once all resources are loaded.
+// NOTE: The original code had inconsistent init behavior depending on load order:
+// icons last -> only drawCanvas(), image/page last -> only centerCanvas().
+// This now always does both, ensuring the canvas is centered and drawn regardless
+// of which resource finishes loading last.
 let initializationDone = false;
 let tryInitialize = function() {
     if (initializationDone || !readyToDrawImage || readyToDrawIcons !== 0 || !pageReady) {
@@ -3083,7 +3087,7 @@ let openRollChunkCanvas = async function(el, rand, sNum, rand2, sNum2, isUnpick)
     $('#fancyRollModal, .roll-chunk-spinner').show();
     $('#fancyRollModal .modal-content').hide();
     $('.canvasDiv').css({'opacity': 1});
-    try { await preloadChunkImages(el); } catch (e) { console.warn('Failed to preload chunk images:', e); }
+    await preloadChunkImages(el);
     isPreloading = false;
     $('.roll-chunk-spinner').hide();
     $('#fancyRollModal .modal-content').show();
@@ -3847,11 +3851,14 @@ let redirectPanelCanvas = function(name) {
     updateChunkInfo();
     drawCanvas();
     $('.infoid').removeClass('blink');
-    // Force reflow to restart the animation if already playing
-    void $('.infoid')[0]?.offsetWidth;
-    $('.infoid').addClass('blink');
-    $('.infoid').one('animationend', function() {
-        $(this).removeClass('blink');
+    // Use double rAF to ensure the class removal is painted before re-adding
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            $('.infoid').addClass('blink');
+            $('.infoid').one('animationend', function() {
+                $(this).removeClass('blink');
+            });
+        });
     });
 }
 
@@ -7615,7 +7622,7 @@ let resetSectionVars = async function(chunkId) {
     !!chunkInfo['sections'][chunkId] && Object.keys(chunkInfo['sections'][chunkId]).forEach((section) => {
         sectionUrls[section] = './resources/section_overlays/' + chunkId + '-' + section + '.png';
     });
-    try { await preloadImages([sectionMainUrl, ...Object.values(sectionUrls)]); } catch (e) { console.warn('Failed to preload section images:', e); }
+    await preloadImages([sectionMainUrl, ...Object.values(sectionUrls)]);
     sectionChunkId = chunkId;
     hoveredNumSection = '-1';
     sectionImgs = [];
@@ -12666,7 +12673,7 @@ let preloadChunkImages = async function(elArr) {
         yCoord = 66 - (parseInt(chunkId) % 256);
         imgs.push('./resources/chunk_images/row-' + yCoord + '-column-' + xCoord + '.png');
     });
-    try { await preloadImages(imgs); } catch (e) { console.warn('Failed to preload images:', e); }
+    await preloadImages(imgs);
 }
 
 // Preloads images

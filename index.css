@@ -531,13 +531,14 @@ button.menu2 {
 }
 
 .infoid.blink {
-    animation: infoid-blink 3s ease-in-out;
+    animation: infoid-blink 4s linear;
 }
 
 @keyframes infoid-blink {
     0% { background-color: var(--colorFlash); }
-    33% { background-color: transparent; }
-    66% { background-color: var(--colorFlash); }
+    25% { background-color: transparent; }
+    50% { background-color: var(--colorFlash); }
+    75% { background-color: transparent; }
     100% { background-color: transparent; }
 }
 
