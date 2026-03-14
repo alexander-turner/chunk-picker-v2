@@ -8099,7 +8099,7 @@ let openFriendsListAdd = function() {
     modalOutsideTime = Date.now();
     $('.mid-friend').focus();
 
-    $('.mid-friend').on('input', function(e) {
+    $('.mid-friend').off('input').on('input', function(e) {
         if ((!(/^[a-zA-Z]+$/).test(e.target.value) && e.target.value !== '') || e.target.value.length > 4) {
             $(this).val(prevValueMidFriend);
         } else {
@@ -8115,7 +8115,7 @@ let openFriendsListAdd = function() {
         }
     });
 
-    $('.name-friend').on('input', function(e) {
+    $('.name-friend').off('input').on('input', function(e) {
         prevValueMidFriend = e.target.value;
         if (e.target.value.length > 0) {
             nameFriendGood = true;
@@ -9310,14 +9310,14 @@ let openHighest2 = function(notScrollTop) {
                 $(`.${combatStyle.replaceAll(' ', '_')}-body`).append(`<div class='slayer-section slayer-section-2'></div>`);
                 $(`.${combatStyle.replaceAll(' ', '_')}-body .slayer-section-2`).append(`<div class='noscroll slayer-task-calc-title'>Slayer Task Calculator</div>`);
                 $(`.${combatStyle.replaceAll(' ', '_')}-body .slayer-section-2`).append(`<div class='noscroll slayer-calc-container'><span class="noscroll"><span class="noscroll combat-level-label">Combat Level:</span> <input class="noscroll combat-level-input" value="${prevValueLevelInput['Combat']}" /></span><span class="noscroll"><span class="noscroll combat-level-label">Slayer Level:</span> <input class="noscroll slayer-level-input" value="${prevValueLevelInput['Slayer']}" /></span><br /><span class="checkboxes noscroll">Ignore Combat Level: <input type="checkbox" class="noscroll ignore-combat-level-input" checked="${prevValueLevelInput['ignoreCombatLevel']}" /></span><span class="checkboxes noscroll">Krystilia Slayer Creatures: <input type="checkbox" class="noscroll krystilia-slayer-creatures-input" checked="${prevValueLevelInput['krystiliaSlayerCreatures']}" /></span><button class="noscroll calc-slayer-tasks-button" onclick="calculateSlayerTasks()">Calculate Doable Tasks</button></div>`);
-                $('.combat-level-input').on('input', function(e) {
+                $('.combat-level-input').off('input').on('input', function(e) {
                     if (!e.target.value.match(/^[0-9]*$/i)) {
                         $(this).val(prevValueLevelInput['Combat']);
                     } else {
                         prevValueLevelInput['Combat'] = e.target.value;
                     }
                 });
-                $('.slayer-level-input').on('input', function(e) {
+                $('.slayer-level-input').off('input').on('input', function(e) {
                     if (!e.target.value.match(/^[0-9]*$/i)) {
                         $(this).val(prevValueLevelInput['Slayer']);
                     } else {
