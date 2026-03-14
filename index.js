@@ -7279,7 +7279,14 @@ let printUntakenMids = function() {
 // Prints all differences with the split chunkinfo (debug)
 let printSplitChunksDiff = async function() {
     let diffArr = {};
-    const response = await fetch('./chunkpicker-chunkinfo-export-split.json');
+    let response;
+    try {
+        response = await fetch('./chunkpicker-chunkinfo-export-split.json');
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+    } catch (error) {
+        console.error('Failed to load split chunk info:', error);
+        return;
+    }
     const data = await response.json();
     let chunkInfoSplit = data;
     let chunks2 = {};
@@ -7910,7 +7917,10 @@ let searchingPlayerMaps = function() {
 let searchPlayerMaps = function() {
     let url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRdsOtdI264xc_c4rXKnSr9SVyz3tn7IiJvd5OQzOU5TgnNjiW5vizAwtK5vJzoaAFVBbOdruPCtPRM/pub?gid=1831536443&single=true&output=csv';
     fetch(url)
-    .then(response => response.text())
+    .then(response => {
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        return response.text();
+    })
     .then(data => {
         let formattedData = {};
         data.split('\n').forEach((row, i) => {
@@ -7928,6 +7938,11 @@ let searchPlayerMaps = function() {
             $('#searchPlayerMaps').addClass('wrong');
             $('#searchPlayerMapsButton').attr('disabled', true);
         }
+    })
+    .catch(error => {
+        console.error('Failed to search player maps:', error);
+        $('#searchPlayerMaps').addClass('wrong');
+        $('#searchPlayerMapsButton').attr('disabled', true);
     });
 }
 
@@ -8508,7 +8523,10 @@ let loadMapsData = function() {
     $('#searchMaps').val('').focus();
     let url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRdsOtdI264xc_c4rXKnSr9SVyz3tn7IiJvd5OQzOU5TgnNjiW5vizAwtK5vJzoaAFVBbOdruPCtPRM/pub?gid=1831536443&single=true&output=csv';
     fetch(url)
-    .then(response => response.text())
+    .then(response => {
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        return response.text();
+    })
     .then(data => {
         let formattedData = {};
         data.split('\n').forEach((row, i) => {
@@ -8518,6 +8536,10 @@ let loadMapsData = function() {
         });
         mapsData = formattedData;
         searchMaps();
+    })
+    .catch(error => {
+        console.error('Failed to load maps data:', error);
+        mapsData = {};
     });
 }
 
@@ -8555,7 +8577,10 @@ let formatDate = function(dateStr) {
 let loadPoolsData = function() {
     let url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRdsOtdI264xc_c4rXKnSr9SVyz3tn7IiJvd5OQzOU5TgnNjiW5vizAwtK5vJzoaAFVBbOdruPCtPRM/pub?gid=1428556181&single=true&output=csv';
     fetch(url)
-    .then(response => response.text())
+    .then(response => {
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        return response.text();
+    })
     .then(data => {
         let formattedData = {'priority': {}, 'new': {}};
         let currentDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/London' }));
@@ -8593,6 +8618,9 @@ let loadPoolsData = function() {
         }).split(',')[13].replaceAll('"', '').replaceAll('|', ',');
         $('.pools-period-c').text(kickText);
         $('.content12a .subtitle, .content12b .subtitle').show();
+    })
+    .catch(error => {
+        console.error('Failed to load pools data:', error);
     });
 }
 
@@ -12487,7 +12515,10 @@ let checkMID = function(mid) {
                     if (!snap2.val()) {
                         let url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRdsOtdI264xc_c4rXKnSr9SVyz3tn7IiJvd5OQzOU5TgnNjiW5vizAwtK5vJzoaAFVBbOdruPCtPRM/pub?gid=1831536443&single=true&output=csv';
                         fetch(url)
-                        .then(response => response.text())
+                        .then(response => {
+                            if (!response.ok) throw new Error('HTTP ' + response.status);
+                            return response.text();
+                        })
                         .then(data => {
                             let formattedData = {};
                             data.split('\n').forEach((row, i) => {
@@ -12515,6 +12546,9 @@ let checkMID = function(mid) {
                                     }
                                 });
                             }
+                        })
+                        .catch(error => {
+                            console.error('Failed to look up map by username:', error);
                         });
                     } else {
                         myRef = firebase.database().ref('maps/' + mid);
@@ -12697,7 +12731,16 @@ let loadData = async function(startup) {
     if (!myRef) {
         return;
     }
-    const response = await fetch('./chunkpicker-chunkinfo-export.json');
+    let response;
+    try {
+        response = await fetch('./chunkpicker-chunkinfo-export.json');
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+    } catch (error) {
+        console.error('Failed to load chunk info data:', error);
+        chunkInfo = chunkInfo || {};
+        $('.custom-tooltiptext').html('Failed to load chunk data. Please refresh the page.').css('visibility', 'visible');
+        return;
+    }
     const data = await response.json();
     gotData = true;
     chunkInfo = data;
@@ -12705,7 +12748,17 @@ let loadData = async function(startup) {
     globalValids = {};
     setCodeItems();
 
-    const response2 = await fetch('./tasksMap.json');
+    let response2;
+    try {
+        response2 = await fetch('./tasksMap.json');
+        if (!response2.ok) throw new Error('HTTP ' + response2.status);
+    } catch (error) {
+        console.error('Failed to load tasks map:', error);
+        tasksMap = tasksMap || {};
+        tasksMapReverse = tasksMapReverse || {};
+        $('.custom-tooltiptext').html('Failed to load task data. Please refresh the page.').css('visibility', 'visible');
+        return;
+    }
     const data2 = await response2.json();
     tasksMap = data2;
     tasksMapReverse = Object.fromEntries(Object.entries(data2).map(([name, id]) => [id, name]));
