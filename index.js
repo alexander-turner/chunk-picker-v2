@@ -12670,10 +12670,14 @@ let preloadChunkImages = async function(elArr) {
 let preloadImages = async function(imgs) {
     let load = imgs.filter((a) => !imagesPreloaded[a]).map(async a => {
         let img = new Image();
-        img.src = a;
         imagesPreloaded[a] = true;
         return await new Promise(res => {
             img.onload = () => res(img);
+            img.onerror = () => {
+                imagesPreloaded[a] = false;
+                res(null);
+            };
+            img.src = a;
         });
     });
     await Promise.all(load);
