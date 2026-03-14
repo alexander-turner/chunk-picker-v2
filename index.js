@@ -3226,6 +3226,7 @@ let takeMeToChunkCanvas = function() {
     $('.roll-chunk-window-outer2').remove();
     $('.roll-chunk-window-outer').css('left', '');
     $('#submit-roll-chunk-button').hide();
+    $('#fancyRollModal').off().find('*').off();
     $('#fancyRollModal').remove();
 }
 
@@ -4662,12 +4663,14 @@ let dismissHelp = function() {
 // Exits the pick warning window
 let cancelPickWarning = function() {
     pickChunkWarningModalOpen = false;
+    $('#rollWarningModal').off().find('*').off();
     $('#rollWarningModal').remove();
 }
 
 // Exits the roll 2 warning window
 let cancelRoll2Warning = function() {
     roll2ChunkWarningModalOpen = false;
+    $('#roll2WarningModal').off().find('*').off();
     $('#roll2WarningModal').remove();
 }
 
@@ -4686,6 +4689,7 @@ let openPatchNotesModal = function(fromClick) {
 
 // Exits the patch notes
 let dismissPatchNotes = function() {
+    $('#patchNotesModal').off().find('*').off();
     $('#patchNotesModal').remove();
     patchNotesOpen = false;
     patchNotesOpenSoon = false;
@@ -4710,6 +4714,7 @@ let openChunkNotesModal = function() {
 // Saves the chunk notes
 let saveChunkNotes = function() {
     if (!(signedIn || testMode)) {
+        $('#chunkNotesModal').off().find('*').off();
         $('#chunkNotesModal').remove();
         notesOpen = false;
         !locked && setData();
@@ -4746,6 +4751,7 @@ let openNewTasksModal = function(data, expandFuture) {
 
 // Closes the new chunk tasks modal
 let closeNewTasks = function() {
+    $('#newTasksModal').off().find('*').off();
     $('#newTasksModal').remove();
     newTasksOpen = false;
     modalOutsideTime = Date.now();
@@ -4796,6 +4802,7 @@ let openXpRewardModal = function(skill, line, xpArr, num) {
             }
             setData();
             toggleHiddenTasks(settings['hideChecked'] && actuallyHideChecked);
+            $('#xpRewardModal').off().find('*').off();
             $('#xpRewardModal').remove();
         } else {
             modal.generate('xpRewardModal', onMobile);
@@ -4812,6 +4819,7 @@ let openXpRewardModal = function(skill, line, xpArr, num) {
             $('#submit-xp-reward-button').text(num + 1 === tempXpArr.length ? 'Save' : 'Next');
             $('#submit-xp-reward-button').removeAttr('onclick').addClass('disabled');
             $('#submit-xp-reward-button').attr('onClick', `openXpRewardModal("${skill}", "${line}", "", ${num + 1});`);
+            $('.xp-reward-data').find('*').off();
             $('.xp-reward-data').empty();
             ['None', ...skillNamesXp.filter(skillOpt => { return (tempXpArr[num].skills.split('x')[0] === 'Any' || tempXpArr[num].skills.split('|').includes(skillOpt)) })].forEach((skillOpt) => {
                 if (skillOpt !== 'None') {
@@ -4862,6 +4870,7 @@ let closeXpRewardModal = function() {
     xpRewardOpen = false;
     tempXpArr = null;
     tempSkillChoice = null;
+    $('#xpRewardModal').off().find('*').off();
     $('#xpRewardModal').remove();
 }
 
@@ -4879,6 +4888,7 @@ let openMapIntroModal = function(justStartingChunk) {
 
 // Exits the map intro modal
 let closeMapIntroModal = function() {
+    $('#introModal').off().find('*').off();
     $('#introModal').remove();
     mapIntroOpen = false;
     mapIntroOpenSoon = false;
@@ -5422,6 +5432,7 @@ let enableTestMode = async function(close, fromConfirm) {
     if (!inEntry && !importMenuOpen && !manualModalOpen && !detailsModalOpen && !notesModalOpen && !highscoreMenuOpen && !helpMenuOpen) {
         onMobile && hideMobileMenu();
         if (fromConfirm) {
+            $('#exitSandboxWarningModal').off().find('*').off();
             $('#exitSandboxWarningModal').remove();
             exitSandboxWarningModalOpen = false;
             if (close) {
@@ -7489,6 +7500,7 @@ let changeManualAreasFilterBy = function() {
 // Searches for matching names within manual areas data
 let searchManualAreas = function() {
     let searchTemp = $('#searchManualAreas').val().toLowerCase();
+    $('#manual-areas-data').find('*').off();
     $('#manual-areas-data').empty();
     Object.keys(chunkInfo['challenges']['Nonskill']).filter(task => { return chunkInfo['challenges']['Nonskill'][task].hasOwnProperty('UnlocksArea') && task.toLowerCase().includes(searchTemp.toLowerCase()) && (!filterByUnlockedManualAreas || (possibleAreas.hasOwnProperty(task) && possibleAreas[task])) }).sort().forEach((area) => {
         $('#manual-areas-data').append(`<div class='outer-manual-area noscroll'><span class='manual-area-btn enable-manual-area-btn noscroll${(!testMode && (viewOnly || inEntry || locked)) ? ' locked' : ''}${manualAreas.hasOwnProperty(area) && manualAreas[area] ? ' selected-area' : ''}${manualAreas.hasOwnProperty(area) && !manualAreas[area] ? ' grey-area' : ''}' onclick='setManualArea("${encodeRFC5987ValueChars(area)}", ${true})'>Enable</span><span class='manual-area-btn disable-manual-area-btn noscroll${(!testMode && (viewOnly || inEntry || locked)) ? ' locked' : ''}${manualAreas.hasOwnProperty(area) && !manualAreas[area] ? ' selected-area' : ''}${manualAreas.hasOwnProperty(area) && manualAreas[area] ? ' grey-area' : ''}' onclick='setManualArea("${encodeRFC5987ValueChars(area)}", ${false})'>Disable</span><span class='manual-area-text noscroll${possibleAreas.hasOwnProperty(area) && possibleAreas[area] ? ' green' : ''}'><a class='noscroll link' href="${"https://oldschool.runescape.wiki/w/" + encodeForUrl(area)}" target='_blank'>${area.replaceAll(/#/g, '#\u200B').replaceAll(/\//g, '/\u200B')}</a></span></div>`);
@@ -7532,6 +7544,7 @@ let openChunkSections = function() {
 // Searches for matching names within manual areas data
 let searchChunkSections = function() {
     let searchTemp = $('#searchChunkSections').val().toLowerCase();
+    $('#chunk-sections-data').find('*').off();
     $('#chunk-sections-data').empty();
     let chunkImageUrls = [];
     !!tempChunks['unlocked'] && Object.keys(tempChunks['unlocked']).filter(chunkId => chunkInfo['sections'].hasOwnProperty(chunkId) && Object.keys(chunkInfo['sections'][chunkId]).filter(section => section !== "0").length > 0 && (chunkId.toLowerCase().includes(searchTemp.toLowerCase()) || (chunkInfo['chunks'][chunkId].hasOwnProperty('Nickname') && chunkInfo['chunks'][chunkId]['Nickname'].toLowerCase().includes(searchTemp.toLowerCase())))).sort((a, b) => parseInt(a) - parseInt(b)).forEach((chunkId) => {
@@ -7859,6 +7872,7 @@ let selectTopbarChoice = function(index) {
 let openCustomizeTopbar = function() {
     modal.generate('customizeTopbarModal', onMobile);
     onMobile && hideMobileMenu();
+    $('#cutomize-topbar-data-inner').find('*').off();
     $('#cutomize-topbar-data-inner').empty();
     customizeTopbarModalOpen = true;
     $('#customizeTopbarModal').show();
@@ -7958,6 +7972,7 @@ let openQuestSteps = function(skill, challenge) {
         questStepsModalOpen = true;
         let quest = skill === 'Diary' ? challenge.split('~')[1].split('|').join('').split('#')[0] : challenge.split('~')[1].split('|').join('');
         $('.quest-steps-title').html(`<a class='noscroll link' href="${"https://oldschool.runescape.wiki/w/" + encodeForUrl(quest)}" target='_blank'>${quest.includes('Disaster/') ? quest.split('Disaster/')[1] : quest}</a>`);
+        $('.quest-steps-data').find('*').off();
         $('.quest-steps-data').empty();
         $('.quest-steps-data').append(`<div class='noscroll step step-header'><span class='noscroll step-table-header'>Step</span><span class='noscroll description-table-header'>Description</span></div>`);
         let savedLastLine = '';
@@ -8024,6 +8039,7 @@ let openFriendsList = function() {
     modal.generate('friendsListModal', onMobile);
     onMobile && hideMobileMenu();
     friendsListModalOpen = true;
+    $('.friends-list-data').find('*').off();
     $('.friends-list-data').empty();
     $('.friends-list-data').append(`<div class='addEntry noscroll' onclick='openFriendsListAdd()'>Add Map Entry</div>`);
     Object.keys(friends).sort((a, b) => { return friends[a].toLowerCase().localeCompare(friends[b].toLowerCase()) }).forEach((friendMid) => {
@@ -8165,6 +8181,7 @@ let constructionLockedChange = function() {
 // Submits picked construction chunk/level if one is chosen, then closes modal either way
 let addConstructionLocked = function(close) {
     if (close) {
+        $('#constructionLockModal').off().find('*').off();
         $('#constructionLockModal').remove();
         constructionLockedModalOpen = false;
     } else {
@@ -8177,6 +8194,7 @@ let addConstructionLocked = function(close) {
                 setData();
                 openHighest2();
             }
+            $('#constructionLockModal').off().find('*').off();
             $('#constructionLockModal').remove();
             constructionLockedModalOpen = false;
         }
@@ -8196,6 +8214,7 @@ let openManualAddOuter = function() {
 let openMonstersAdd = function() {
     modal.generate('manuallyAddStuffModal', onMobile);
     manualOuterModalOpen = false;
+    $('#manuallyAddOuterModal').off().find('*').off();
     $('#manuallyAddOuterModal').remove();
     monsterModalOpen = true;
     $('#manuallyAddStuffModal').show();
@@ -8208,6 +8227,7 @@ let openMonstersAdd = function() {
 // Searches for matching names within monsters
 let searchMonsters = function() {
     let searchTemp = $('#searchMonsters').val().toLowerCase();
+    $('.monsters-data').find('*').off();
     $('.monsters-data').empty();
     baseChunkDataTotal = {
         'Items': {},
@@ -8345,6 +8365,7 @@ let selectManualItemPrimary = function(type, item, num) {
 let openManualAdd = function() {
     manualOuterModalOpen = false;
     modal.generate('manualTasksModal', onMobile);
+    $('#manuallyAddOuterModal').off().find('*').off();
     $('#manuallyAddOuterModal').remove();
     fullChallengeArr = {};
     Object.keys(chunkInfo['challenges']).forEach((skill) => {
@@ -8372,6 +8393,7 @@ let openManualAdd = function() {
 // Filters the full list of challenges
 let searchManualTasks = function() {
     let searchTemp = $('#searchManual').val().toLowerCase();
+    $('.challenge-data').find('*').off();
     $('.challenge-data').empty();
     if (Object.keys(fullChallengeArr).filter(challenge => challenge.toLowerCase().replaceAll('~', '').replaceAll('|', '').includes(searchTemp)).length <= 100 || filterByChecked) {
         Object.keys(fullChallengeArr).filter(challenge => challenge.toLowerCase().replaceAll('~', '').replaceAll('|', '').includes(searchTemp)).sort().forEach((challenge) => {
@@ -8572,6 +8594,7 @@ let loadPoolsData = function() {
 let openUserTasks = function() {
     modal.generate('userTaskModal', onMobile);
     manualOuterModalOpen = false;
+    $('#manuallyAddOuterModal').off().find('*').off();
     $('#manuallyAddOuterModal').remove();
     userTasksModalOpen = true;
     $('#usertasks-data').html('<span class="usertasks-list" onclick="openUserTasksList()">Show Added Tasks</span><div><div class="usertasks-cancel" onclick="addUserTask(true)">Cancel</div><div class="usertasks-proceed disabled" onclick="addUserTask()">Add task</div></div>');
@@ -8612,6 +8635,7 @@ let cancelUserTaskDelete = function() {
     userTaskSavedName = null;
     userTaskSavedSkill = null;
     modalOutsideTime = Date.now();
+    $('#deleteUserTaskWarningModal').off().find('*').off();
     $('#deleteUserTaskWarningModal').remove();
 }
 
@@ -8627,6 +8651,7 @@ let deleteUserTask = function() {
     userTaskSavedName = null;
     userTaskSavedSkill = null;
     modalOutsideTime = Date.now();
+    $('#deleteUserTaskWarningModal').off().find('*').off();
     $('#deleteUserTaskWarningModal').remove();
     showUserTasksList();
     calcCurrentChallengesCanvas(true);
@@ -8635,6 +8660,7 @@ let deleteUserTask = function() {
 
 // Renders the usertasks list
 let showUserTasksList = function() {
+    $('.usertasks-list-data').find('*').off();
     $('.usertasks-list-data').empty();
     !!userTasks && Object.keys(userTasks).forEach((skill) => {
         !!userTasks[skill] && Object.keys(userTasks[skill]).forEach((challenge) => {
@@ -8682,6 +8708,7 @@ let checkUserTasksValid = function() {
 // Submits user task if added, then closes modal either way
 let addUserTask = function(close) {
     if (close) {
+        $('#userTaskModal').off().find('*').off();
         $('#userTaskModal').remove();
         userTasksModalOpen = false;
     } else {
@@ -8715,6 +8742,7 @@ let addUserTask = function(close) {
                 calcCurrentChallengesCanvas(true);
                 setData();
             }
+            $('#userTaskModal').off().find('*').off();
             $('#userTaskModal').remove();
             userTasksModalOpen = false;
         }
@@ -8772,6 +8800,7 @@ let openSearch = function() {
 // Searches for matching names within chunk data
 let searchWithinChunks = function() {
     let searchTemp = $('#searchChunks').val().toLowerCase();
+    $('.searchchunks-data').find('*').off();
     $('.searchchunks-data').empty();
     onlyInitialData ? $(`.searchchunks-initwarning`).show() : $(`.searchchunks-initwarning`).hide();
     if (searchTemp.startsWith('~') && searchTemp.toLowerCase() === '~items' && Object.keys(baseChunkData).length > 0) {
@@ -8884,6 +8913,7 @@ let openSearchDetails = function(category, name, prevCategory, prevName) {
     } else {
         $('.searchdetails-back').hide();
     }
+    $('.searchdetails-data').find('*').off();
     $('.searchdetails-data').empty();
     $('.searchdetails-title').text(name.replaceAll(/\|~/g, '').replaceAll(/~\|/g, '').replaceAll(/\*/g, ''));
     let skills = [...skillNames];
@@ -9063,6 +9093,7 @@ let openHighest = function() {
             slots.splice(slots.indexOf('Ammo'), 0, 'Ammo (2h)');
         }
         $('.highest-title').empty();
+        $('.highest-data').find('*').off();
         $('.highest-data').empty();
         let highestOverallLocal = filterByObtainedBiS ? highestOverallCompleted : highestOverall;
         combatStyles.forEach((combatStyle) => {
@@ -9114,6 +9145,7 @@ let changeBiSFilterBy = function() {
 let openBisUpgrades = function(key) {
     bisUpgradesModalOpen = true;
     modal.generate('slotUpgradeModal', onMobile);
+    $('.bis-upgrades-data').find('*').off();
     $('.bis-upgrades-data').empty();
     $('.bis-upgrades-slot-name').text(`[${key.replaceAll('_', ' ').replaceAll('-', ' ')}]`);
     let slot = key.split('-')[1];
@@ -9189,6 +9221,7 @@ let openHighest2 = function(notScrollTop) {
         combatStyles.push('Clues');
         combatStyles.push('Shooting Stars');
         $('.highest2-title').empty();
+        $('.highest2-data').find('*').off();
         $('.highest2-data').empty();
         combatStyles.forEach((combatStyle) => {
             $('.highest2-title').append(`<div class='noscroll style-button ${combatStyle.replaceAll(' ', '_')}-button' onclick='switchHighest2Tab("${combatStyle.replaceAll(' ', '_')}")' title='${combatStyle}'><span class='noscroll'><img class='noscroll slot-icon' src='./resources/${combatStyle.replaceAll(' ', '_')}_combat.png' /></span></div>`);
@@ -9370,6 +9403,7 @@ let passiveLockedChange = function() {
 // Adds passive skill
 let addPassiveSkill = function(close, skill) {
     if (close) {
+        $('#passiveLevelModal').off().find('*').off();
         $('#passiveLevelModal').remove();
         passiveSkillModalOpen = false;
     } else {
@@ -9398,6 +9432,7 @@ let addPassiveSkill = function(close, skill) {
             }
             calcCurrentChallengesCanvas(true);
             setData();
+            $('#passiveLevelModal').off().find('*').off();
             $('#passiveLevelModal').remove();
             passiveSkillModalOpen = false;
         }
@@ -9448,6 +9483,7 @@ let checkConstructionLocked = function() {
 // Submits questchunks modal
 let addQuestChunk = function(close) {
     if (close) {
+        $('#missingQuestModal').off().find('*').off();
         $('#missingQuestModal').remove();
         questChunksModalOpen = false;
         questChunksQuestTasks = [];
@@ -9465,6 +9501,7 @@ let addQuestChunk = function(close) {
             calcCurrentChallengesCanvas(true, true);
             setData();
         }
+        $('#missingQuestModal').off().find('*').off();
         $('#missingQuestModal').remove();
         questChunksModalOpen = false;
     }
@@ -9626,6 +9663,7 @@ let calculateSlayerTasks = function() {
 let openSlayerMasterInfo = function(master) {
     modal.generate('slayerMasterInfoModal', onMobile);
     slayerMasterInfoModalOpen = true;
+    $('.slayermasterinfo-data').find('*').off();
     $('.slayermasterinfo-data').empty();
     $('.slayermasterinfo-title').text(master);
     let tooltipBase = `<span class="slayermasterinfo-question">What do the colors indicate? <i class="fa-solid fa-question-circle question-help"></i></span>`;
@@ -9645,6 +9683,7 @@ let openSlayerMasterInfo = function(master) {
 let openDoableClueSteps = function(tier) {
     modal.generate('doableClueStepsModal', onMobile);
     doableClueStepsModalOpen = true;
+    $('.doablecluesteps-data').find('*').off();
     $('.doablecluesteps-data').empty();
     $('.doablecluesteps-title').text(tier.charAt(0).toUpperCase() + tier.slice(1) + ' Clue Steps:');
     $('.doablecluesteps-subtitle').html(`<a class='noscroll link' href='https://oldschool.runescape.wiki/w/Treasure_Trails/Full_guide/${tier.charAt(0).toUpperCase() + tier.slice(1)}' target='_blank'>Wiki</a>`);
@@ -9666,6 +9705,7 @@ let openDoableClueSteps = function(tier) {
 let openClueChunks = function(tier) {
     modal.generate('clueChunksModal', onMobile);
     clueChunksModalOpen = true;
+    $('.cluechunks-data').find('*').off();
     $('.cluechunks-data').empty();
     $('.cluechunks-title').text(tier.charAt(0).toUpperCase() + tier.slice(1) + ' Chunks:');
     let unlocked = { ...possibleAreas };
@@ -9706,6 +9746,7 @@ let addEquipment = function() {
 // Searches for matching names within equipment data
 let searchAddEquipment = function() {
     let searchTemp = $('#searchAddEquipment').val().toLowerCase();
+    $('.add-equipment-data').find('*').off();
     $('.add-equipment-data').empty();
     if ((Object.keys(chunkInfo['equipment']).filter(item => item.replaceAll(/~/g, '').replaceAll(/\|/g, '').toLowerCase().includes(searchTemp)).length > 0 && Object.keys(chunkInfo['equipment']).filter(item => item.replaceAll(/~/g, '').replaceAll(/\|/g, '').toLowerCase().includes(searchTemp)).length <= 200) || filterByCheckedEquipment) {
         Object.keys(chunkInfo['equipment']).filter(item => item.replaceAll(/~/g, '').replaceAll(/\|/g, '').toLowerCase().includes(searchTemp) && (!filterByCheckedEquipment || !!manualEquipment[item])).length > 0 && Object.keys(chunkInfo['equipment']).filter(item => item.replaceAll(/~/g, '').replaceAll(/\|/g, '').toLowerCase().includes(searchTemp) && (!filterByCheckedEquipment || !!manualEquipment[item])).sort().forEach((item) => {
@@ -9751,6 +9792,7 @@ let backlogSources = function() {
 // Searches for matching names within sources
 let searchBacklogSources = function() {
     let searchTemp = $('#searchBacklogSources').val().toLowerCase();
+    $('.backlog-sources-data').find('*').off();
     $('.backlog-sources-data').empty();
     let localChunkData = {...baseChunkData};
     !!backloggedSources && Object.keys(backloggedSources).forEach((category) => {
@@ -9844,6 +9886,7 @@ let openStickers = function(id) {
     if (signedIn || testMode) {
         modal.generate('stickerModal', onMobile);
         stickerModalOpen = true;
+        $('.sticker-data').find('*').off();
         $('.sticker-data').empty();
         $('#stickerModal').show();
         modalOutsideTime = Date.now();
@@ -9940,6 +9983,7 @@ let openPaint = function(id) {
     if (signedIn || testMode) {
         modal.generate('paintModal', onMobile);
         paintModalOpen = true;
+        $('.paint-data').find('*').off();
         $('.paint-data').empty();
         $('#paintModal').show();
         modalOutsideTime = Date.now();
@@ -10130,6 +10174,7 @@ let decodeObject = function(obj) {
 let viewPrimaryMethodsOrTasks = function(skill, showTasks) {
     modal.generate('methodsModal', onMobile);
     methodsModalOpen = true;
+    $('.methods-data').find('*').off();
     $('.methods-data').empty();
     if (showTasks) {
         $('.methods-topbar').addClass('show-tasks');
@@ -10195,6 +10240,7 @@ let switchHighest2Tab = function(tab) {
 let closeManualAdd = function() {
     manualModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#manualTasksModal').off().find('*').off();
     $('#manualTasksModal').remove();
 }
 
@@ -10202,6 +10248,7 @@ let closeManualAdd = function() {
 let closeUserTasksList = function() {
     userTasksListModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#userTasksListModal').off().find('*').off();
     $('#userTasksListModal').remove();
 }
 
@@ -10209,6 +10256,7 @@ let closeUserTasksList = function() {
 let closeChallengeDetails = function() {
     detailsModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#challengeDetailsModal').off().find('*').off();
     $('#challengeDetailsModal').remove();
 }
 
@@ -10216,6 +10264,7 @@ let closeChallengeDetails = function() {
 let closeChallengeNotes = function() {
     notesModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#backlogNotesModal').off().find('*').off();
     $('#backlogNotesModal').remove();
 }
 
@@ -10223,6 +10272,7 @@ let closeChallengeNotes = function() {
 let closeRules = function() {
     rulesModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#rulesModal').off().find('*').off();
     $('#rulesModal').remove();
 }
 
@@ -10230,6 +10280,7 @@ let closeRules = function() {
 let closeSettings = function() {
     settingsModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#settingsModal').off().find('*').off();
     $('#settingsModal').remove();
 }
 
@@ -10237,6 +10288,7 @@ let closeSettings = function() {
 let closeSearch = function() {
     searchModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#searchModal').off().find('*').off();
     $('#searchModal').remove();
 }
 
@@ -10244,6 +10296,7 @@ let closeSearch = function() {
 let closeSearchDetails = function() {
     searchDetailsModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#searchDetailsModal').off().find('*').off();
     $('#searchDetailsModal').remove();
 }
 
@@ -10251,6 +10304,7 @@ let closeSearchDetails = function() {
 let closeHighest = function() {
     highestModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#highestModal').off().find('*').off();
     $('#highestModal').remove();
 }
 
@@ -10258,6 +10312,7 @@ let closeHighest = function() {
 let closeBisUpgrades = function() {
     bisUpgradesModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#slotUpgradeModal').off().find('*').off();
     $('#slotUpgradeModal').remove();
 }
 
@@ -10266,6 +10321,7 @@ let closeHighest2 = function() {
     $(".primarymethods-context-menu").hide(100);
     highest2ModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#highest2Modal').off().find('*').off();
     $('#highest2Modal').remove();
     editingSlayerLock = false;
 }
@@ -10275,6 +10331,7 @@ let closeMethods = function() {
     $(".trainingmethods-context-menu").hide(100);
     methodsModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#methodsModal').off().find('*').off();
     $('#methodsModal').remove();
 }
 
@@ -10282,6 +10339,7 @@ let closeMethods = function() {
 let closeComplete = function() {
     completeModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#manualCompleteModal').off().find('*').off();
     $('#manualCompleteModal').remove();
 }
 
@@ -10289,6 +10347,7 @@ let closeComplete = function() {
 let closeClipboard = function() {
     clipboardModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#miscellaneousActionsModal').off().find('*').off();
     $('#miscellaneousActionsModal').remove();
 }
 
@@ -10296,6 +10355,7 @@ let closeClipboard = function() {
 let closeAddEquipment = function() {
     addEquipmentModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#addEquipmentModal').off().find('*').off();
     $('#addEquipmentModal').remove();
 }
 
@@ -10303,6 +10363,7 @@ let closeAddEquipment = function() {
 let closeSticker = function() {
     stickerModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#stickerModal').off().find('*').off();
     $('#stickerModal').remove();
 }
 
@@ -10310,6 +10371,7 @@ let closeSticker = function() {
 let closePaint = function() {
     paintModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#paintModal').off().find('*').off();
     $('#paintModal').remove();
 }
 
@@ -10317,6 +10379,7 @@ let closePaint = function() {
 let closeBacklogSources = function() {
     backlogSourcesModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#backlogSourcesModal').off().find('*').off();
     $('#backlogSourcesModal').remove();
 }
 
@@ -10324,6 +10387,7 @@ let closeBacklogSources = function() {
 let closeChunkHistory = function() {
     chunkHistoryModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#chunkHistoryModal').off().find('*').off();
     $('#chunkHistoryModal').remove();
 }
 
@@ -10331,6 +10395,7 @@ let closeChunkHistory = function() {
 let closeChallengeAlts = function() {
     challengeAltsModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#altChallengesModal').off().find('*').off();
     $('#altChallengesModal').remove();
 }
 
@@ -10338,6 +10403,7 @@ let closeChallengeAlts = function() {
 let closeOverlays = function() {
     overlaysModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#mapOverlaysModal').off().find('*').off();
     $('#mapOverlaysModal').remove();
 }
 
@@ -10345,6 +10411,7 @@ let closeOverlays = function() {
 let closeOuterAdd = function() {
     manualOuterModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#manuallyAddOuterModal').off().find('*').off();
     $('#manuallyAddOuterModal').remove();
 }
 
@@ -10352,6 +10419,7 @@ let closeOuterAdd = function() {
 let closeMonstersAdd = function() {
     monsterModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#manuallyAddStuffModal').off().find('*').off();
     $('#manuallyAddStuffModal').remove();
 }
 
@@ -10359,6 +10427,7 @@ let closeMonstersAdd = function() {
 let closeQuestSteps = function() {
     questStepsModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#questStepsModal').off().find('*').off();
     $('#questStepsModal').remove();
 }
 
@@ -10366,6 +10435,7 @@ let closeQuestSteps = function() {
 let closeFriendsList = function() {
     friendsListModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#friendsListModal').off().find('*').off();
     $('#friendsListModal').remove();
 }
 
@@ -10373,6 +10443,7 @@ let closeFriendsList = function() {
 let closeFriendsListAdd = function() {
     friendsAddModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#addFriendMapModal').off().find('*').off();
     $('#addFriendMapModal').remove();
 }
 
@@ -10380,6 +10451,7 @@ let closeFriendsListAdd = function() {
 let closeManualAreas = function() {
     manualAreasModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#manualAreasModal').off().find('*').off();
     $('#manualAreasModal').remove();
 }
 
@@ -10387,6 +10459,7 @@ let closeManualAreas = function() {
 let closeChunkSections = function() {
     chunkSectionsModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#chunkSectionsModal').off().find('*').off();
     $('#chunkSectionsModal').remove();
 }
 
@@ -10394,6 +10467,7 @@ let closeChunkSections = function() {
 let closeCustomizeTopbar = function() {
     customizeTopbarModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#customizeTopbarModal').off().find('*').off();
     $('#customizeTopbarModal').remove();
 }
 
@@ -10425,6 +10499,7 @@ let saveChunkSectionPicker = function() {
     unlockedSections = combineJSONs(unlockedSections, manualSectionsModified);
     unlockedSections = combineJSONs(unlockedSections, findConnectedSections((Object.keys(savedChunks).length > 0 ? savedChunks : {...tempChunks['unlocked'], ...manualAreas}) || {}, unlockedSections));
     modalOutsideTime = Date.now();
+    $('#chunkSectionPickerModal').off().find('*').off();
     $('#chunkSectionPickerModal').remove();
     if (needsUpdating) {
         calcCurrentChallengesCanvas(true, chunkSectionCalculateAfter, false, JSON.parse(JSON.stringify(unlockedSections)));
@@ -10436,6 +10511,7 @@ let saveChunkSectionPicker = function() {
 let closeSlayerMasterInfo = function() {
     slayerMasterInfoModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#slayerMasterInfoModal').off().find('*').off();
     $('#slayerMasterInfoModal').remove();
 }
 
@@ -10443,6 +10519,7 @@ let closeSlayerMasterInfo = function() {
 let closeDoableClueSteps = function() {
     doableClueStepsModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#doableClueStepsModal').off().find('*').off();
     $('#doableClueStepsModal').remove();
 }
 
@@ -10450,6 +10527,7 @@ let closeDoableClueSteps = function() {
 let closeClueChunks = function() {
     clueChunksModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#clueChunksModal').off().find('*').off();
     $('#clueChunksModal').remove();
 }
 
@@ -10457,6 +10535,7 @@ let closeClueChunks = function() {
 let closeChunkNotes = function() {
     notesOpen = false;
     modalOutsideTime = Date.now();
+    $('#chunkNotesModal').off().find('*').off();
     $('#chunkNotesModal').remove();
 }
 
@@ -10465,6 +10544,7 @@ let submitCompleteTasks = function() {
     completeChallenges(true);
     completeModalOpen = false;
     modalOutsideTime = Date.now();
+    $('#manualCompleteModal').off().find('*').off();
     $('#manualCompleteModal').remove();
 }
 
@@ -10698,6 +10778,7 @@ let showDetails = function(challenge, skill, dataType, isNested) {
         let skills = [...skillNames];
         skills.push('Nonskill');
         detailsModalOpen = true;
+        $('#details-data').find('*').off();
         $('#details-data').empty();
         if (!chunkInfo['challenges'].hasOwnProperty(skill)) {
             chunkInfo['challenges'][skill] = {};
@@ -10986,6 +11067,7 @@ let showAlternatives = function(challenge, skill) {
     modal.generate('altChallengesModal', onMobile);
     challenge = decodeQueryParam(challenge);
     challengeAltsModalOpen = true;
+    $('#alts-data').find('*').off();
     $('#alts-data').empty();
     !!globalValids[skill] && Object.keys(globalValids[skill]).filter(chal => !backlog.hasOwnProperty(skill) || !backlog[skill].hasOwnProperty(chal)).forEach((chal) => {
         if (skill === 'BiS' && globalValids[skill][chal] === globalValids[skill][challenge]) {
@@ -10995,11 +11077,13 @@ let showAlternatives = function(challenge, skill) {
                 $('#alts-data').append(`<div class="alt-challenge noscroll ${skill + '-alt-challenge'}"><label class="radio noscroll ${(!testMode && (viewOnly || inEntry || locked)) ? "radio--disabled" : ''}"><span class="radio__input noscroll"><input type="radio" name="radio" ${(chal === challenge) ? "checked" : ''} class='noscroll' onclick="checkOffAltChallenge('${skill}', '${encodeRFC5987ValueChars(chal)}', '${encodeRFC5987ValueChars(challenge)}')" ${(!testMode && (viewOnly || inEntry || locked)) ? "disabled" : ''}><span class="radio__control noscroll"><svg viewBox='0 0 24 24' aria-hidden="true" focusable="false"><path fill='currentColor' stroke='currentColor' d='M 12 12 m -7.5 0 a 7.5 7.5 90 1 0 15 0 a 7.5 7.5 90 1 0 -15 0' /></svg></span></span><span class="radio__label noscroll"><b class="noscroll"><span class="inner noscroll">${skill}</b>: ${chal.split('~')[0]}<a class='link noscroll' href="${"https://oldschool.runescape.wiki/w/" + encodeForUrl((chal.split('|')[1]))}" target="_blank">${chal.split('~')[1].split('|').join('')}</a>${chal.split('~')[2]}</span></span></label></div>`);
             }
         } else if (globalValids[skill][chal] === globalValids[skill][challenge]) {
+            $('#alts-data').find('*').off();
             $('#alts-data').empty();
             $('#alts-data').append(`<div class="alt-challenge noscroll ${skill + '-alt-challenge'}"><div class='noscroll results'><span class='noscroll holder'><span class='noscroll topline'>No Alternatives</span></span></div></div>`);
         }
     });
     if (!$('#alts-data').children() || $('#alts-data').children().length < 2) {
+        $('#alts-data').find('*').off();
         $('#alts-data').empty();
         $('#alts-data').append(`<div class='noscroll results'><span class='noscroll holder'><span class='noscroll topline'>No Alternatives</span></span></div>`);
     }
@@ -11057,6 +11141,7 @@ let showOverlays = function(fromHelper) {
         $('#map-marker-btn').hasClass('notice-me') && $('#map-marker-btn').removeClass('notice-me');
         onMobile && hideMobileMenu();
         overlaysModalOpen = true;
+        $('#overlays-data').find('*').off();
         $('#overlays-data').empty();
         $('.overlays-title-checkbox input').prop('checked', unlockedOverlayOnly);
         let overlay;
@@ -11157,6 +11242,7 @@ let showNotes = function(challenge, skill, note) {
         note = '';
     }
     $('#notes-title').html(`<b class="noscroll">Backlogging:</b><br />${challenge.replaceAll(/\|/g, '').replaceAll(/~/g, '')}`);
+    $('#notes-data').find('*').off();
     $('#notes-data').empty();
     $('#notes-data').append(`<div class="notes-row noscroll"><label class="radio noscroll ${(!testMode && (viewOnly || inEntry || locked)) ? "radio--disabled" : ''}"><span class="radio__input noscroll"><input type="radio" name="radio" checked="true" class='noscroll' onclick="saveNotesData('task', null)" ${(!testMode && (viewOnly || inEntry || locked)) ? "disabled" : ''}><span class="radio__control noscroll"><svg viewBox='0 0 24 24' aria-hidden="true" focusable="false"><path fill='currentColor' stroke='currentColor' d='M 12 12 m -7.5 0 a 7.5 7.5 90 1 0 15 0 a 7.5 7.5 90 1 0 -15 0' /></svg></span></span><span class="radio__label noscroll"><b class="noscroll">Backlog just this task</b></span></label></div>`);
     $('#notes-data').append(`<div class="noscroll">(Optional) Add notes:</div><div class='backlog-textarea-wrapper noscroll'><textarea maxlength="128"></textarea></div>`);
@@ -11263,6 +11349,7 @@ let submitFriend = function() {
 // Apply the given rule preset
 let applyPreset = function(preset) {
     presetWarningModalOpen = false;
+    $('#rulesPresetModal').off().find('*').off();
     $('#rulesPresetModal').remove();
     !!rulePresets && !!rulePresets[preset] && Object.keys(rules).forEach((rule) => {
         if (rule === 'Kill X Amount') {
@@ -11285,6 +11372,7 @@ let applyPreset = function(preset) {
 // Shows warning modal for applying a preset
 let warnPreset = function(preset) {
     modal.generate('rulesPresetModal', onMobile);
+    $('#preset-data').find('*').off();
     $('#preset-data').empty();
     $('#preset-title').text('Apply the ' + preset + ' preset?');
     $('.specific-preset').text(preset);
@@ -11335,11 +11423,13 @@ let applyImportRules = function(proceed) {
             });
             showRules();
             checkOffRules();
+            $('#rulesImportModal').off().find('*').off();
             $('#rulesImportModal').remove();
         } catch (error) {
             $('.rules-import-error').show();
         }
     } else {
+        $('#rulesImportModal').off().find('*').off();
         $('#rulesImportModal').remove();
     }
 }
@@ -11400,6 +11490,7 @@ let showRules = function(isPage2) {
         } else {
             toggleRulesPanel(Object.keys(rulesPanelVis)[0]);
         }
+        $('#rules-subdata, #rules-data .panel').find('*').off();
         $('#rules-subdata, #rules-data .panel').empty();
         $('#rules-subdata').append(`<div class="rule-category intro-category noscroll">Basic Rules</div><div class="rule-subcategory intro-subcategory noscroll">If you're unfamiliar with the basic rules of a OneChunkMan account, check out a basic description of the rules and guidelines <a class='noscroll' href='https://docs.google.com/document/d/1ia1wiRSYs8GznzHM5D7SynNG-PWM9-9Jv3JKGV6Y28Q' target='_blank'>here</a>!</div>`);
         if ((!viewOnly && !inEntry && !locked) || testMode) {
@@ -11490,6 +11581,7 @@ let showSettings = function(keepSettingsClosed) {
     modal.generate('settingsModal', onMobile);
     onMobile && hideMobileMenu();
     settingsModalOpen = true;
+    $('#settings-data').find('*').off();
     $('#settings-data').empty();
     Object.keys(settingStructure).forEach((category) => {
         $('#settings-data').append(`<div class="setting-category ${category.replaceAll(/ /g, '_')}-category noscroll">${category}</div>`);
@@ -11658,6 +11750,7 @@ let showChunkHistory = function() {
         modal.generate('chunkHistoryModal', onMobile);
         onMobile && hideMobileMenu();
         chunkHistoryModalOpen = true;
+        $('#chunkhistory-data-inner').find('*').off();
         $('#chunkhistory-data-inner').empty();
         let tempDate = new Date();
         let passedChunks = {};
