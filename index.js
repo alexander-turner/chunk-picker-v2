@@ -7256,6 +7256,7 @@ let printUntakenMids = function() {
     let untakenMids = [];
     let letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
     databaseRef.child('mapids').once('value', function(snap) {
+        if (snap.val() === null) return;
         for (let i = 0; i < 26; i++) {
             for (let j = 0; j < 26; j++) {
                 for (let k = 0; k < 26; k++) {
@@ -12808,7 +12809,7 @@ let loadData = async function(startup) {
     myRef.child('settings').once('value', function(snap) {
         let snapDiff = preloadHelper(snap, 'settings');
         if (snapDiff === false) return;
-        let settingsTemp = snap.val();
+        let settingsTemp = snap.val() || {};
         settingsTemp['highvis'] = document.cookie.split(';').filter(function(item) {
             return item.indexOf('highvis=true') >= 0
         }).length > 0;
@@ -13509,13 +13510,14 @@ let rollMID = function(count) {
         return;
     }
     databaseRef.child('mapids').once('value', function(snap) {
+        let existingMapIds = snap.val() || {};
         while (badNums && rollCount < 250) {
             char1 = String.fromCharCode(97 + Math.floor(Math.random() * 26));
             char2 = String.fromCharCode(97 + Math.floor(Math.random() * 26));
             char3 = String.fromCharCode(97 + Math.floor(Math.random() * 26));
             char4 = rollCount > 10 ? String.fromCharCode(97 + Math.floor(Math.random() * 26)) : '';
             charSet = char1 + char2 + char3 + char4;
-            if (!snap.val()[charSet] && !bannedIds.includes(charSet)) {
+            if (!existingMapIds[charSet] && !bannedIds.includes(charSet)) {
                 badNums = false;
             }
             rollCount++;
@@ -13530,6 +13532,7 @@ let rollMID = function(count) {
                         displayName: mid
                     }).then(() => {
                         databaseRef.child('template').once('value', function(snap2) {
+                            if (snap2.val() === null) return;
                             let temp = snap2.val();
                             temp.uid = userCredential.user.uid;
                             databaseRef.child('maps/' + charSet).set(temp);
