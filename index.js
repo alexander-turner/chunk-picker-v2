@@ -3835,16 +3835,13 @@ let redirectPanelCanvas = function(name) {
     infoLockedId = encodeRFC5987ValueChars(realName.toString());
     updateChunkInfo();
     drawCanvas();
-    $('.infoid').addClass('new');
-    setTimeout(function() {
-        $('.infoid').removeClass('new');
-        setTimeout(function() {
-            $('.infoid').addClass('new');
-            setTimeout(function() {
-                $('.infoid').removeClass('new');
-            }, 1000);
-        }, 1000);
-    }, 1000);
+    $('.infoid').removeClass('blink');
+    // Force reflow to restart the animation if already playing
+    void $('.infoid')[0]?.offsetWidth;
+    $('.infoid').addClass('blink');
+    $('.infoid').one('animationend', function() {
+        $(this).removeClass('blink');
+    });
 }
 
 // Highlights outside borders of unlocked areas

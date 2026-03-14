@@ -530,6 +530,17 @@ button.menu2 {
     background-color: var(--colorFlash);
 }
 
+.infoid.blink {
+    animation: infoid-blink 3s ease-in-out;
+}
+
+@keyframes infoid-blink {
+    0% { background-color: var(--colorFlash); }
+    33% { background-color: transparent; }
+    66% { background-color: var(--colorFlash); }
+    100% { background-color: transparent; }
+}
+
 #chunkinfo-sidebar-container {
     float: left;
     height: 85%;
