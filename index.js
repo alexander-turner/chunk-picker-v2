@@ -6503,7 +6503,9 @@ let setupCurrentChallenges = function(tempChallengeArr, noDisplay, noClear) {
             let boost = 0;
             if (!!tempChallengeArr[skill] && tempChallengeArr[skill].match(/\{[0-9]+\}/g)) {
                 skillTask = tempChallengeArr[skill].replaceAll(/\{[0-9]+\}/g, '');
-                boost = tempChallengeArr[skill].match(/\{[0-9]+\}/g)[0].match(/\d+/)[0];
+                let boostMatch = tempChallengeArr[skill].match(/\{[0-9]+\}/g);
+                let boostInner = boostMatch ? boostMatch[0].match(/\d+/) : null;
+                boost = boostInner ? boostInner[0] : 0;
             }
             if (boost === 0) {
                 boost = (globalValidsBoosts.hasOwnProperty(skill) && globalValidsBoosts[skill].hasOwnProperty(skillTask) ? globalValidsBoosts[skill][skillTask] : 0);
@@ -6697,9 +6699,11 @@ let setupCurrentChallengesFromSaved = function() {
         let skillTask = Object.keys(activeTasks[skill])[0];
         let level;
         let boost;
-        if (activeTasks[skill][skillTask].match(/\{[0-9]+\}/g)) {
+        let boostMatch2 = activeTasks[skill][skillTask].match(/\{[0-9]+\}/g);
+        if (boostMatch2) {
             level = activeTasks[skill][skillTask].split('{')[0];
-            boost = activeTasks[skill][skillTask].match(/\{[0-9]+\}/g)[0].match(/\d+/)[0];
+            let boostInner2 = boostMatch2[0].match(/\d+/);
+            boost = boostInner2 ? boostInner2[0] : 0;
         } else {
             level = activeTasks[skill][skillTask];
             boost = 0;
@@ -9236,7 +9240,9 @@ let openHighest2 = function(notScrollTop) {
                     let boost = 0;
                     if (!!highestOverall[skill] && highestOverall[skill].match(/\{[0-9]+\}/g)) {
                         skillTask = highestOverall[skill].replaceAll(/\{[0-9]+\}/g, '');
-                        boost = highestOverall[skill].match(/\{[0-9]+\}/g)[0].match(/\d+/)[0];
+                        let boostMatch3 = highestOverall[skill].match(/\{[0-9]+\}/g);
+                        let boostInner3 = boostMatch3 ? boostMatch3[0].match(/\d+/) : null;
+                        boost = boostInner3 ? boostInner3[0] : 0;
                     }
                     let completedNum = checkedAllTasks.hasOwnProperty(skill) && globalValids.hasOwnProperty(skill) ? Math.min(Object.keys(checkedAllTasks[skill]).filter(task => globalValids[skill].hasOwnProperty(task) && (!backlog.hasOwnProperty(skill) || !backlog[skill].hasOwnProperty(task))).length, Object.keys(globalValids[skill]).filter(task => !backlog.hasOwnProperty(skill) || !backlog[skill].hasOwnProperty(task)).length) : 0;
                     $(`.${combatStyle.replaceAll(' ', '_')}-body`).append(`<div class='noscroll row'><span class='noscroll skill-icon-wrapper'><img class='noscroll skill-icon' src='./resources/${skill}_skill.png' title='${skill}' /></span><span class='noscroll skill-text${settings['allTasks'] ? ' narrow' : ''}'>${(testMode || !(viewOnly || inEntry || locked)) ? `<span class='noscroll edit-highest' onclick='openPassiveModal("${skill}")'><i class="noscroll fa-solid fa-edit"></i></span>` : ''}${(!!skillTask ? '<b class="noscroll">[' + (boost > 0 ? (chunkInfo['challenges'][skill][skillTask]['Level'] - boost) + '] (+' + boost + ')' : chunkInfo['challenges'][skill][skillTask]['Level'] + ']') + '</b> ' : '') + (skillTask || 'None').replaceAll('~', '').replaceAll('|', '')} ${skillTask ? `<span class="task-info" onclick="showDetails('${encodeRFC5987ValueChars(skillTask)}', '${skill}', '')"><i class="info-icon fa-solid fa-info-circle"></i></span>` : ''}</span><span class='noscroll skill-button ${onMobile ? 'mobile' : ''} ${(primarySkill[skill] ? 'active' : '')}'>${primarySkill[skill] ? `<div class='noscroll methods-button' onclick='viewPrimaryMethodsOrTasks("${skill}", false)'>View Methods</div></span>` : `<div class='noscroll'>None</div></span>`}${settings['allTasks'] ? `<span class='noscroll skill-button2 ${(!!globalValids[skill] && Object.keys(globalValids[skill]).filter(task => !backlog.hasOwnProperty(skill) || !backlog[skill].hasOwnProperty(task)).length > 0 ? 'active' : '')}'>${!!globalValids[skill] && Object.keys(globalValids[skill]).filter(task => !backlog.hasOwnProperty(skill) || !backlog[skill].hasOwnProperty(task)).length > 0 ? `<div class='noscroll tasks-button ${skill}-tasks-button ${Object.keys(globalValids[skill]).filter(task => !backlog.hasOwnProperty(skill) || !backlog[skill].hasOwnProperty(task)).length > completedNum ? 'yellow' : 'green'}' onclick='viewPrimaryMethodsOrTasks("${skill}", true)'>Tasks <span class='noscroll'>(${completedNum}/${Object.keys(globalValids[skill]).filter(task => !backlog.hasOwnProperty(skill) || !backlog[skill].hasOwnProperty(task)).length})</span></div>` : `<div class='noscroll'>None</div>`}` : ''}${(testMode || !(viewOnly || inEntry || locked)) ? `<span class='noscroll manualprimary-highest' onclick='openManualPrimaryContextMenu("${skill}")'><i class="noscroll fa-solid fa-cogs"></i></span>` : ''}</span></div>`);
