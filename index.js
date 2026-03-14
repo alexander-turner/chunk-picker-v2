@@ -4997,7 +4997,7 @@ let unlockEntry = function() {
                 setTimeout(function() {
                     $('.pin.entry').removeClass('animated shake');
                 }, 500);
-            }, (1500 + signInAttempts * 10));
+            }, Math.min(1000 * Math.pow(2, signInAttempts), 30000));
         } else if (!!methods && methods.length > 0) {
             setTimeout(function() {
                 firebase.auth().signInWithEmailAndPassword('sourcechunk+' + mid + '@yandex.com', savedPin + mid).then((userCredential) => {
@@ -5345,7 +5345,7 @@ let changePin = function() {
                 $('.pin.old2.first').addClass('wrong').select();
                 $('#change-pin').text('Change Password');
                 signInAttempts++;
-            }, (1500 + signInAttempts * 10));
+            }, Math.min(1000 * Math.pow(2, signInAttempts), 30000));
         } else {
             setTimeout(function() {
                 firebase.auth().signInWithEmailAndPassword('sourcechunk+' + mid + '@yandex.com', pinOld + mid).then((userCredential) => {
